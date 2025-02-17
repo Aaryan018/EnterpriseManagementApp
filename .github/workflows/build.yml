@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
 
       # Step 2: Set up .NET environment
-      - name: Setup .NET
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'   # Update this to the .NET version you are using
