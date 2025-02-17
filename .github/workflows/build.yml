@@ -20,6 +20,7 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'   # Update this to the .NET version you are using
+          include-prerelease: true
 
       # Step 3: Restore dependencies
       - name: Restore dependencies
