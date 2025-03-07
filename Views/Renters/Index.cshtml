@@ -1,0 +1,177 @@
+﻿@model IEnumerable<EnterpriseManagementApp.Models.Renter>
+
+@{
+    ViewData["Title"] = "Renters List";
+}
+
+<div class="renters-wrapper">
+    <header class="renters-header">
+        <h1 class="renters-title">Renters List</h1>
+        <p class="renters-subtitle">Manage and view your renters</p>
+    </header>
+
+    <div class="actions">
+        <a href="@Url.Action("Create", "Renters")" class="btn btn-create">Create New Renter</a>
+    </div>
+
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Name)</th>
+                    <th>@Html.DisplayNameFor(model => model.Email)</th>
+                    <th>@Html.DisplayNameFor(model => model.ContactNumber)</th>
+                    <th>@Html.DisplayNameFor(model => model.Address)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ContactNumber)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Address)</td>
+                        <td>
+                            <a href="@Url.Action("Edit", "Renters", new { id = item.RenterId })" class="btn btn-edit">Edit</a> |
+                            <a href="@Url.Action("Details", "Renters", new { id = item.RenterId })" class="btn btn-details">Details</a> |
+                            <a href="@Url.Action("Delete", "Renters", new { id = item.RenterId })" class="btn btn-delete">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="actions">
+        <a href="@Url.Action("Index", "Home")" class="btn btn-back">Back to Dashboard</a>
+    </div>
+</div>
+
+<style>
+    /* Wrapper */
+    .renters-wrapper {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    /* Header */
+    .renters-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .renters-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2e3b4e;
+    }
+
+    .renters-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-top: 10px;
+    }
+
+    /* Actions */
+    .actions {
+        margin-bottom: 20px;
+        text-align: right;
+    }
+
+    .btn {
+        padding: 10px 15px;
+        font-size: 1rem;
+        border-radius: 6px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .btn-create {
+        background-color: #28a745;
+        color: white;
+    }
+
+        .btn-create:hover {
+            background-color: #218838;
+        }
+
+    .btn-back {
+        background-color: #6c757d;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 6px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+        .btn-back:hover {
+            background-color: #5a6268;
+        }
+
+
+    /* Table */
+    .table-container {
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f4f4f4;
+        font-weight: 600;
+    }
+
+    td a {
+        margin-right: 10px;
+    }
+
+    /* Buttons inside table */
+    .btn-edit {
+        background-color: #ffc107;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+    }
+
+    .btn-details {
+        background-color: #17a2b8;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+    }
+
+    .btn-delete {
+        background-color: #dc3545;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Table row hover effect */
+    tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+</style>

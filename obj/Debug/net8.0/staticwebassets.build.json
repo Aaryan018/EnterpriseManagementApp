@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "7pyGCEzaSIS2X0Ub85gK5A1P6E9XEDO8h9sPovE8fak=",
+  "Source": "EnterpriseManagementApp",
+  "BasePath": "_content/EnterpriseManagementApp",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "EnterpriseManagementApp/wwwroot",
+      "Source": "EnterpriseManagementApp",
+      "ContentRoot": "/Users/aaryangupta/Downloads/EnterpriseManagementApp/EnterpriseManagementApp/wwwroot/",
+      "BasePath": "_content/EnterpriseManagementApp",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

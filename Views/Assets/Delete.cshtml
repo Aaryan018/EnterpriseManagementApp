@@ -1,0 +1,208 @@
+﻿@model EnterpriseManagementApp.Models.Asset
+
+@{
+    ViewData["Title"] = "Delete Asset";
+}
+
+<div class="assets-wrapper">
+    <header class="assets-header">
+        <h1 class="assets-title">Delete Asset</h1>
+        <p class="assets-subtitle">Are you sure you want to delete this asset?</p>
+    </header>
+
+    <div class="details-container">
+        <dl class="row">
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RentRate)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.RentRate)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Name)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Description)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Type)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Type)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Value)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Value)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CustomerId)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.CustomerId)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Status)</dt>
+            <dd class="col-sm-9">
+                <span class="status-badge status-@(Model.Status ? "active" : "inactive")">
+                    @(Model.Status ? "Active" : "Inactive")
+                </span>
+            </dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Address)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Address)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CreatedAt)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.CreatedAt)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UpdatedAt)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.UpdatedAt)</dd>
+        </dl>
+
+        <form action="/Assets/Delete/@Model.AssetId" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-delete"><i class="fas fa-trash-alt"></i> Delete</button>
+        </form>
+    </div>
+
+    <div class="back-button">
+        <a class="btn btn-back" href="/Assets/Index"><i class="fas fa-arrow-left"></i> Back to List</a>
+    </div>
+</div>
+
+<style>
+    /* Wrapper */
+    .assets-wrapper {
+        max-width: 1400px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    /* Header */
+    .assets-header {
+        text-align: center;
+        margin-bottom: 30px;
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    .assets-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1a237e;
+    }
+
+    .assets-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-top: 10px;
+    }
+
+    /* Details Container */
+    .details-container {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+        .details-container .row {
+            margin: 0;
+        }
+
+        .details-container dt {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .details-container dd {
+            margin-bottom: 20px;
+        }
+
+        .details-container form {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+    /* Status Badge */
+    .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .status-active {
+        background-color: #e8f5e9;
+        color: #2e7d31;
+    }
+
+    .status-inactive {
+        background-color: #ffebee;
+        color: #c62828;
+    }
+
+    /* Delete Button */
+    .btn-delete {
+        background-color: #dc3545;
+        color: white;
+        padding: 12px 24px;
+        font-size: 1.1rem;
+        font-weight: 500;
+        border-radius: 6px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .btn-delete i {
+            margin-right: 8px;
+        }
+
+        .btn-delete:hover {
+            background-color: #c62828;
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Back Button */
+    .back-button {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .btn-back {
+        background-color: #6c757d;
+        color: white;
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: 6px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .btn-back i {
+            margin-right: 8px;
+        }
+
+        .btn-back:hover {
+            background-color: #5a6268;
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+    }
+</style>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}

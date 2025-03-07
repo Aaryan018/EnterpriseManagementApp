@@ -1,0 +1,166 @@
+﻿@model EnterpriseManagementApp.Models.Renter
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="create-wrapper">
+    <header class="create-header">
+        <h1 class="create-title">Create Renter</h1>
+        <h3 class="create-subtitle">Fill in the details below to create a new renter.</h3>
+    </header>
+
+    <div class="create-container">
+        <h4>Renter</h4>
+        <hr />
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" placeholder="Enter Name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" placeholder="Enter Email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ContactNumber" class="control-label"></label>
+                <input asp-for="ContactNumber" class="form-control" placeholder="Enter Contact Number" />
+                <span asp-validation-for="ContactNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control" placeholder="Enter Address" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+
+    <div class="back-link">
+        <a href="@Url.Action("Index", "Renters")" class="btn btn-back">Back to List</a>
+    </div>
+</div>
+
+<style>
+    /* Wrapper */
+    .create-wrapper {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    /* Header */
+    .create-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .create-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #28a745;
+    }
+
+    .create-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-top: 10px;
+    }
+
+    /* Form Container */
+    .create-container {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-control {
+        font-size: 1rem;
+        padding: 12px 15px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        width: 100%;
+        margin-top: 5px;
+    }
+
+        .form-control:focus {
+            border-color: #28a745;
+            outline: none;
+        }
+
+    .form-group span {
+        color: #dc3545;
+        font-size: 0.875rem;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        margin-top: 20px;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .btn-back {
+        background-color: #6c757d;
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .btn-back:hover {
+        background-color: #5a6268;
+    }
+
+    .back-link {
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

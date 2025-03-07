@@ -1,0 +1,173 @@
+﻿@model EnterpriseManagementApp.Models.Renter
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="renter-edit-wrapper">
+    <header class="renter-header">
+        <h1 class="renter-title">Edit Renter</h1>
+        <h4 class="renter-subtitle">Update the details of the renter</h4>
+    </header>
+
+    <div class="form-container">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="RenterId" />
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Name</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label">Email</label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ContactNumber" class="control-label">Contact Number</label>
+                <input asp-for="ContactNumber" class="form-control" />
+                <span asp-validation-for="ContactNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address" class="control-label">Address</label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-save"><i class="fas fa-save"></i> Save</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="back-button">
+        <a href="@Url.Action("Index", "Renters")" class="btn btn-back"><i class="fas fa-arrow-left"></i> Back to List</a>
+    </div>
+</div>
+
+<style>
+    /* Wrapper */
+    .renter-edit-wrapper {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    /* Header */
+    .renter-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .renter-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2e3b4e;
+    }
+
+    .renter-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-top: 10px;
+    }
+
+    /* Form Container */
+    .form-container {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-group .text-danger {
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 5px;
+            color: #dc3545;
+        }
+
+    /* Buttons */
+    .btn-save {
+        background-color: #28a745;
+        color: white;
+        padding: 12px 24px;
+        font-size: 1.1rem;
+        font-weight: 500;
+        border-radius: 6px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+        .btn-save i {
+            margin-right: 8px;
+        }
+
+        .btn-save:hover {
+            background-color: #218838;
+        }
+
+    .back-button {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .btn-back {
+        background-color: #6c757d;
+        color: white;
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: 6px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .btn-back i {
+            margin-right: 8px;
+        }
+
+        .btn-back:hover {
+            background-color: #5a6268;
+        }
+
+    /* Hover Effect */
+    .form-group input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+}

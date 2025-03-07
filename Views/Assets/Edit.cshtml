@@ -1,0 +1,226 @@
+﻿@model EnterpriseManagementApp.Models.Asset
+
+@{
+    ViewData["Title"] = "Edit Asset";
+}
+
+<div class="assets-wrapper">
+    <header class="assets-header">
+        <h1 class="assets-title">Edit Asset</h1>
+        <p class="assets-subtitle">Modify the details of the asset</p>
+    </header>
+
+    <div class="form-container">
+        <form action="/Assets/Edit/@Model.AssetId" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="AssetId" />
+            <div class="form-group">
+                <label asp-for="RentRate" class="control-label">Rent Rate</label>
+                <input asp-for="RentRate" class="form-control" value="@Model.RentRate" />
+                <span asp-validation-for="RentRate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Asset Name</label>
+                <input asp-for="Name" class="form-control" value="@Model.Name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Description</label>
+                <input asp-for="Description" class="form-control" value="@Model.Description" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Type" class="control-label">Asset Type</label>
+                <input asp-for="Type" class="form-control" value="@Model.Type" />
+                <span asp-validation-for="Type" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Value" class="control-label">Asset Value</label>
+                <input asp-for="Value" class="form-control" value="@Model.Value" />
+                <span asp-validation-for="Value" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CustomerId" class="control-label">Customer ID</label>
+                <input asp-for="CustomerId" class="form-control" value="@Model.CustomerId" />
+                <span asp-validation-for="CustomerId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label">Status</label>
+                <input asp-for="Status" type="checkbox" class="form-check-input" @(Model.Status ? "checked" : "") />
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address" class="control-label">Address</label>
+                <input asp-for="Address" class="form-control" value="@Model.Address" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedAt" class="control-label">Created At</label>
+                <input asp-for="CreatedAt" class="form-control" readonly value="@Model.CreatedAt" />
+                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UpdatedAt" class="control-label">Updated At</label>
+                <input asp-for="UpdatedAt" class="form-control" value="@Model.UpdatedAt" />
+                <span asp-validation-for="UpdatedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-edit"><i class="fas fa-save"></i> Save</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="back-button">
+        <a class="btn btn-back" href="/Assets/Index"><i class="fas fa-arrow-left"></i> Back to List</a>
+    </div>
+</div>
+
+<style>
+    /* Wrapper */
+    .assets-wrapper {
+        max-width: 1400px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    /* Header */
+    .assets-header {
+        text-align: center;
+        margin-bottom: 30px;
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    .assets-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1a237e;
+    }
+
+    .assets-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-top: 10px;
+    }
+
+    /* Form Container */
+    .form-container {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group .form-check-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+            .form-group input[readonly] {
+                background-color: #f5f5f5;
+            }
+
+        .form-group .form-check-input {
+            width: auto;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .form-group .text-danger {
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 5px;
+            color: #dc3545;
+        }
+
+    .btn-edit {
+        background-color: #26c6da;
+        color: white;
+        padding: 12px 24px;
+        font-size: 1.1rem;
+        font-weight: 500;
+        border-radius: 6px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .btn-edit i {
+            margin-right: 8px;
+        }
+
+        .btn-edit:hover {
+            background-color: #00acc1;
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Back Button */
+    .back-button {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .btn-back {
+        background-color: #6c757d;
+        color: white;
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: 6px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .btn-back i {
+            margin-right: 8px;
+        }
+
+        .btn-back:hover {
+            background-color: #5a6268;
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+    }
+</style>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}
