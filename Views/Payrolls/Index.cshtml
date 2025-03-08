@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Payroll>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Employee)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PayDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BaseSalary)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Deductions)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OvertimePay)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NetPay)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Employee.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PayDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BaseSalary)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Deductions)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OvertimePay)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NetPay)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.PayrollID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.PayrollID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.PayrollID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

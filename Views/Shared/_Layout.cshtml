@@ -1,49 +1,144 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - EnterpriseManagementApp</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Enterprise Management App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"> <!-- Updated to 6.5.1 -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/EnterpriseManagementApp.styles.css" asp-append-version="true" />
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EnterpriseManagementApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+    <!-- Navbar Start -->
+    @if (User.Identity.IsAuthenticated && !ViewData.ContainsKey("HideNavbar"))
+    {
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+            <div class="container">
+                <!-- Brand Logo -->
+                <a class="navbar-brand fw-bold" href="@Url.Action("Index", "Home")">
+                    <i class="fa-solid fa-building"></i> Enterprise Management App
+                </a>
+
+                <!-- Mobile Toggle Button -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link active" href="@Url.Action("Index", "Home")">
+                                <i class="fa-solid fa-chart-line"></i> Dashboard
+                            </a>
                         </li>
+
+                        @if (User.IsInRole("Manager") || User.IsInRole("Admin") || User.IsInRole("Employee"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="employeesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa-solid fa-users"></i> Employees
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="employeesDropdown">
+                                    @if (User.IsInRole("Manager") || User.IsInRole("Admin"))
+                                    {
+                                        <li><a class="dropdown-item" href="@Url.Action("Index", "Employees")">Employee List</a></li>
+                                    }
+                                    <!-- Removed "Manage Employees" link -->
+                                </ul>
+                            </li>
+                        }
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="rentalsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-building-user"></i> Rentals
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="rentalsDropdown">
+                                <li><a class="dropdown-item" href="@Url.Action("Index", "Renters")">Active Rentals</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Index", "Vacancies")">Vacant Units</a></li>
+                            </ul>
+                        </li>
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" href="@Url.Action("Index", "Services")">
+                                <i class="fa-solid fa-hand-holding-medical"></i> Services
+                            </a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Privacy", "Home")">
+                                <i class="fa-solid fa-shield"></i> Privacy
+                            </a>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-user"></i> @User.Identity.Name
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                                <li><a class="nav-link text-dark" href="@Url.Action("Profile", "Profiles")">Profile</a></li>
+                                <li>
+                                    <form id="logoutForm" method="post" action="@Url.Action("Logout", "Home")">
+                                        @Html.AntiForgeryToken() <!-- Ensure CSRF protection -->
+                                        <button type="submit" class="dropdown-item">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+
+                        @if (User.HasClaim(c => c.Type == "Module" && c.Value == "HR"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Payrolls")">
+                                    <i class="fa-solid fa-briefcase"></i> HR Dashboard
+                                </a>
+                            </li>
+                        }
+
+                        @if (User.HasClaim(c => c.Type == "Module" && c.Value == "Services"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Services")">
+                                    <i class="fa-solid fa-heart"></i> Care Dashboard
+                                </a>
+                            </li>
+                        }
+
+                        @if (User.HasClaim(c => c.Type == "Module" && c.Value == "Housing"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Renters")">
+                                    <i class="fa-solid fa-house-user"></i> Housing Dashboard
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+    }
+    <!-- Page Content Start -->
+    <div class="container my-4">
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-info">@TempData["Message"]</div>
+        }
+        @RenderBody()
     </div>
+    <!-- Page Content End -->
+    <!-- Render Scripts Section if defined -->
+    @RenderSection("Scripts", required: false)
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - EnterpriseManagementApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS with fallback -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        if (!window.bootstrap) {
+            document.write('<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"><\/script>');
+        }
+    </script>
+    <!-- Font Awesome JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script> <!-- Updated to 6.5.1 -->
+    <!-- Custom Scripts -->
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
