@@ -4,17 +4,16 @@ namespace EnterpriseManagementApp.Models.Authentication
 {
     public class SignIn
     {
-        [Key]  // Primary key
-        public int Id { get; set; }
-
         [Required]
         [EmailAddress]
-        public string? Email { get; set; }
+        public string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        public string? Password { get; set; }
-        public bool RememberMe { get; internal set; }
+        public string Password { get; set; }
+
+        [Display(Name = "Remember Me")]
+        public bool RememberMe { get; set; }
     }
 }
 

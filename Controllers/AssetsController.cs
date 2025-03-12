@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using EnterpriseManagementApp;
+using EnterpriseManagementApp.Models;
 using EnterpriseManagementApp.Data;
-using EnterpriseManagementApp.Models.Rentals;
 
 namespace EnterpriseManagementApp.Controllers
 {
@@ -26,7 +27,7 @@ namespace EnterpriseManagementApp.Controllers
         }
 
         // GET: Assets/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
@@ -34,7 +35,7 @@ namespace EnterpriseManagementApp.Controllers
             }
 
             var asset = await _context.Assets
-                .FirstOrDefaultAsync(m => m.AssetID == id);
+                .FirstOrDefaultAsync(m => m.AssetId == id);
             if (asset == null)
             {
                 return NotFound();
@@ -54,10 +55,11 @@ namespace EnterpriseManagementApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AssetID,Type,Status")] Asset asset)
+        public async Task<IActionResult> Create([Bind("AssetId,Name,RentRate,Description,Type,Status,Address,CreatedAt,UpdatedAt")] Asset asset)
         {
             if (ModelState.IsValid)
             {
+                asset.AssetId = Guid.NewGuid();
                 _context.Add(asset);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -66,7 +68,7 @@ namespace EnterpriseManagementApp.Controllers
         }
 
         // GET: Assets/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
@@ -86,9 +88,9 @@ namespace EnterpriseManagementApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AssetID,Type,Status")] Asset asset)
+        public async Task<IActionResult> Edit(Guid id, [Bind("AssetId,Name,RentRate,Description,Type,Status,Address,CreatedAt,UpdatedAt")] Asset asset)
         {
-            if (id != asset.AssetID)
+            if (id != asset.AssetId)
             {
                 return NotFound();
             }
@@ -102,7 +104,7 @@ namespace EnterpriseManagementApp.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AssetExists(asset.AssetID))
+                    if (!AssetExists(asset.AssetId))
                     {
                         return NotFound();
                     }
@@ -117,7 +119,7 @@ namespace EnterpriseManagementApp.Controllers
         }
 
         // GET: Assets/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
@@ -125,7 +127,7 @@ namespace EnterpriseManagementApp.Controllers
             }
 
             var asset = await _context.Assets
-                .FirstOrDefaultAsync(m => m.AssetID == id);
+                .FirstOrDefaultAsync(m => m.AssetId == id);
             if (asset == null)
             {
                 return NotFound();
@@ -137,7 +139,7 @@ namespace EnterpriseManagementApp.Controllers
         // POST: Assets/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var asset = await _context.Assets.FindAsync(id);
             if (asset != null)
@@ -149,9 +151,9 @@ namespace EnterpriseManagementApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AssetExists(int id)
+        private bool AssetExists(Guid id)
         {
-            return _context.Assets.Any(e => e.AssetID == id);
+            return _context.Assets.Any(e => e.AssetId == id);
         }
     }
 }

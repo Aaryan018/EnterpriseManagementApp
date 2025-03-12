@@ -1,16 +1,17 @@
-using System.ComponentModel.DataAnnotations;
 
-namespace EnterpriseManagementApp.Models.Rentals
-{
-    public class Asset
-    {
-        [Key]
-        public int AssetID { get; set; }
+//using System.ComponentModel.DataAnnotations;
 
-        // Nullable Type, if it's optional
-        public string? Type { get; set; }  // Type can be nullable
+//namespace EnterpriseManagementApp.Models.Rentals
+//{
+//    public class Asset
+//    {
+//        [Key]
+//        public int AssetID { get; set; }
 
-        [Required, MaxLength(20)]
-        public string? Status { get; set; }  // Available, Rented
-    }
-}
+//        // Nullable Type, if it's optional
+//        public string? Type { get; set; }  // Type can be nullable
+
+//        [Required, MaxLength(20)]
+//        public string? Status { get; set; }  // Available, Rented
+//    }
+//}

@@ -8,7 +8,7 @@ using EnterpriseManagementApp.Data;
 using EnterpriseManagementApp.Models;
 using EnterpriseManagementApp.Models.Authentication;
 using EnterpriseManagementApp.Models.Employees;
-using EnterpriseManagementApp.Models.Rentals;
+//using EnterpriseManagementApp.Models.Rentals;
 
 namespace EnterpriseManagementApp.Controllers
 {

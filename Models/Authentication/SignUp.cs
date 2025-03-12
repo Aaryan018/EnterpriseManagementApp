@@ -4,29 +4,58 @@ namespace EnterpriseManagementApp.Models.Authentication
 {
     public class SignUp
     {
-        // Remove [Key] since this is a view model, not an entity persisted to the database
-        public int Id { get; set; } // Optional: Only keep if you need it for some reason (e.g., tracking)
+        //public string? FullName { get; set; }
+        [Required(ErrorMessage = "Full Name is required.")]
+        // Allow up to 30 lower and upper case characters.
+        [RegularExpression(@"^[a-zA-Z''-'\s]{1,30}$", ErrorMessage = "Name must be between 1 - 30 characters.")]
+        public string? FullName { get; set; }
 
-        [Required(ErrorMessage = "Email is required.")]
-        [EmailAddress(ErrorMessage = "Invalid email address.")]
-        public string Email { get; set; } // Remove nullable '?' since Required ensures it won't be null
 
-        [Required(ErrorMessage = "Password is required.")]
+        //public string? Address { get; set; }
+        [Required(ErrorMessage = "Address is required.")]
+        [StringLength(200, MinimumLength = 5, ErrorMessage = "Address must be between 5 and 200 characters long.")]
+        public string? Address { get; set; }
+
+
+        [Required(ErrorMessage = "Phone Number Required.")]
+        // Variation of restriction: only allow 10 digit inputs
+        //[RegularExpression(@"^\d{10}$",
+        //    ErrorMessage = "Phone number must be 10 digits.")]
+        [RegularExpression(@"^\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$",
+            ErrorMessage = "Invalid phone number format. Please use (XXX) XXX-XXXX or XXX-XXX-XXXX.")]
+        public string? PhoneNumber { get; set; }
+
+
+        // Email Address
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+
+        [Required(ErrorMessage = "Emergency Contact Required")]
+        [RegularExpression(@"^\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$",
+            ErrorMessage = "Invalid phone number format. Please use (XXX) XXX-XXXX or XXX-XXX-XXXX.")]
+        public string? EmergencyContact { get; set; }
+
+
+        // Password for the User
+        [Required]
         [DataType(DataType.Password)]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
-        public string Password { get; set; } // Remove nullable '?' and add length validation
+        public string Password { get; set; }
 
-        [Required(ErrorMessage = "Confirm password is required.")]
+        // Confirm Password for the User
+        [Required]
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Passwords do not match.")]
-        public string ConfirmPassword { get; set; } // Remove nullable '?' since Required ensures it won't be null
+        public string ConfirmPassword { get; set; }
 
-        [Required(ErrorMessage = "Role is required.")]
-        public string Role { get; set; } // Remove nullable '?' and clarify purpose in comment
-        // Example: "Employee", "Manager", "Admin"
+        [Required(ErrorMessage = "Name of Family Doctor is required.")]
+        // Allow up to 30 lower and upper case characters.
+        [RegularExpression(@"^[a-zA-Z''-'\s]{1,30}$", ErrorMessage = "Name must be between 1 - 30 characters.")]
+        public string? FamilyDoctor { get; set; }
 
-        [Required(ErrorMessage = "Module is required.")]
-        public string Module { get; set; } // Remove nullable '?' and clarify purpose in comment
-        // Example: "HR", "Care", "Housing"
+        // Role to assign to the User (Manager or Customer)
+        [Required]
+        public string Role { get; set; }
     }
 }

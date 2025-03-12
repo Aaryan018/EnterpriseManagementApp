@@ -1,0 +1,29 @@
+# ASP.NET Core
+bin/
+obj/
+wwwroot/
+**/*.user
+**/*.vspscc
+**/*.vssscc
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows Installer files
+Thumbs.db
+ehthumbs.db
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+
+.vs/

@@ -15,31 +15,26 @@ Console.WriteLine($"Current Environment: {builder.Environment.EnvironmentName}")
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Identity Configuration
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+
+// Add Identity
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+// Add session support for anti-forgery token validation
+builder.Services.AddSession(options =>
 {
-    // Password Settings
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 8;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = true;
-
-    // Lockout Settings
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.AllowedForNewUsers = true;
-
-    // User Settings
-    options.User.RequireUniqueEmail = true;
-})
-.AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders();
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
+});
 
 // Cookie Settings
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/SignIns/Index"; // Ensure this matches your sign-in controller/action
+    options.LoginPath = "/Account/SignIn"; // Ensure this matches your sign-in controller/action
     options.AccessDeniedPath = "/Home/AccessDenied";
     options.ExpireTimeSpan = TimeSpan.FromHours(1);
     options.SlidingExpiration = true;
@@ -67,25 +62,31 @@ var app = builder.Build();
 // Database Migration & Seeding
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    //dbContext.Database.EnsureCreated();
+
+
+    // dbContext.Database.EnsureCreated();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+
+    Console.WriteLine("Resetting database...");
+    await dbContext.Database.EnsureDeletedAsync();
+    await dbContext.Database.EnsureCreatedAsync();
+    Console.WriteLine("Database reset successfully.");
+
+
+    // Seed data (add users, renters, assets)
     try
     {
-        var context = services.GetRequiredService<ApplicationDbContext>();
-        await context.Database.MigrateAsync(); // Apply pending migrations
-
-        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-
-        // Seed initial data
-        await SeedData.InitializeAsync(userManager, roleManager);
+        await SeedData.Initialize(scope.ServiceProvider);
         Console.WriteLine("Seeding completed successfully.");
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred during migration or seeding.");
-        Console.WriteLine($"Seeding failed: {ex.Message}");
-        throw; // Re-throw to see the error in Development mode
+        Console.WriteLine($"Error during seeding: {ex.Message}");
+        Console.WriteLine($"Inner exception: {ex.InnerException?.Message}");
     }
 }
 
