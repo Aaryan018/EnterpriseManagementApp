@@ -8390,23 +8390,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\barka\\.nuget\\packages\\": {},
+    "C:\\Users\\Samuel\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\barka\\source\\EnterpriseManagementApp\\EnterpriseManagementApp.csproj",
+      "projectUniqueName": "C:\\Users\\Samuel\\source\\repos\\EnterpriseManagementApp\\EnterpriseManagementApp.csproj",
       "projectName": "EnterpriseManagementApp",
-      "projectPath": "C:\\Users\\barka\\source\\EnterpriseManagementApp\\EnterpriseManagementApp.csproj",
-      "packagesPath": "C:\\Users\\barka\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\barka\\source\\EnterpriseManagementApp\\obj\\",
+      "projectPath": "C:\\Users\\Samuel\\source\\repos\\EnterpriseManagementApp\\EnterpriseManagementApp.csproj",
+      "packagesPath": "C:\\Users\\Samuel\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Samuel\\source\\repos\\EnterpriseManagementApp\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\barka\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Samuel\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
