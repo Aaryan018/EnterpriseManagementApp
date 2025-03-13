@@ -1,0 +1,88 @@
+﻿@{
+    // Fetch the module claim assigned to the user
+    var module = User.Claims.FirstOrDefault(c => c.Type == "Module")?.Value;
+
+    // Dynamically set the page title based on the module claim
+    string moduleTitle = module switch
+    {
+        "HR" => "HR Dashboard",
+        "Care" => "Care Dashboard",
+        "Housing" => "Housing Dashboard",
+        _ => "Enterprise Management Dashboard" // Default title if no module is assigned
+    };
+    ViewData["Title"] = moduleTitle; // Set the title dynamically
+}
+
+@model EnterpriseManagementApp.Models.DashboardViewModel
+
+<div class="container mt-4">
+    <!-- Display the dynamic title -->
+    <h1 class="text-center mb-4">@ViewData["Title"]</h1>
+
+    <div class="row">
+        <!-- HR & Payroll (Visible only for HR managers or users with the HR module) -->
+        @if (User.IsInRole("Manager") || User.HasClaim(c => c.Type == "Module" && c.Value == "HR"))
+        {
+            <div class="col-md-6">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">HR & Payroll</h5>
+                        <p>Total Employees: @Model.EmployeeCount</p>
+                        <p>Total Payroll: @Model.TotalPayroll.ToString("C")</p>
+                        @if (Model.CanViewEmployeeList)
+                        {
+                            <a asp-controller="Employees" asp-action="Index" class="btn btn-light">Manage Employees</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Housing Management (Visible only for users with the Housing module) -->
+        @if (User.HasClaim(c => c.Type == "Module" && c.Value == "Housing"))
+        {
+            <div class="col-md-6">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Housing Management</h5>
+                        <p>Active Rentals: @Model.ActiveRentals</p>
+                        <p>Vacant Units: @Model.VacantUnits</p>
+                        <a href="@Url.Action("Index", "Renters")" class="btn btn-light">Manage Rentals</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row mt-4">
+        <!-- Care Management (Visible only for users with the Care module) -->
+        @if (User.HasClaim(c => c.Type == "Module" && c.Value == "Care"))
+        {
+            <div class="col-md-6">
+                <div class="card text-dark bg-warning">
+                    <div class="card-body">
+                        <h5 class="card-title">Care Management</h5>
+                        <p>Pending Services: @Model.PendingServices</p>
+                        <p>Completed Services: @Model.CompletedServices</p>
+                        <a href="@Url.Action("Index", "Services")" class="btn btn-light">View Service Requests</a>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Reports & Analytics (Visible for users with relevant permissions) -->
+        @if (User.IsInRole("Manager") || User.HasClaim(c => c.Type == "Module" && c.Value == "Reports"))
+        {
+            <div class="col-md-6">
+                <div class="card text-white bg-danger">
+                    <div class="card-body">
+                        <h5 class="card-title">Reports & Analytics</h5>
+                        <p>Monthly Revenue: @Model.MonthlyRevenue.ToString("C")</p>
+                        <p>Annual Revenue: @Model.AnnualRevenue.ToString("C")</p>
+                        <a href="@Url.Action("Index", "Invoices")" class="btn btn-light">View Reports</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

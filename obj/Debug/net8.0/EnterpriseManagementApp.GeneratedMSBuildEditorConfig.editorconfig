@@ -1,0 +1,171 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = EnterpriseManagementApp
+build_property.RootNamespace = EnterpriseManagementApp
+build_property.ProjectDir = /Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop
+build_property._RazorSourceGeneratorDebug = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Assets/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXNzZXRzL0NyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Assets/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXNzZXRzL0RlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Assets/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXNzZXRzL0RldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Assets/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXNzZXRzL0VkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Assets/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXNzZXRzL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/DamageReports/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRGFtYWdlUmVwb3J0cy9DcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/DamageReports/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRGFtYWdlUmVwb3J0cy9EZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/DamageReports/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRGFtYWdlUmVwb3J0cy9EZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/DamageReports/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRGFtYWdlUmVwb3J0cy9FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/DamageReports/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRGFtYWdlUmVwb3J0cy9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Qcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/LeaseAgreements/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGVhc2VBZ3JlZW1lbnRzL0NyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/LeaseAgreements/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGVhc2VBZ3JlZW1lbnRzL0RlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/LeaseAgreements/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGVhc2VBZ3JlZW1lbnRzL0RldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/LeaseAgreements/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGVhc2VBZ3JlZW1lbnRzL0VkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/LeaseAgreements/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGVhc2VBZ3JlZW1lbnRzL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Profiles/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUHJvZmlsZXMvQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Profiles/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUHJvZmlsZXMvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Renters/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUmVudGVycy9DcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Renters/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUmVudGVycy9EZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Renters/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUmVudGVycy9EZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Renters/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUmVudGVycy9FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Renters/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUmVudGVycy9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/SignIns/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2lnbklucy9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/SignUps/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2lnblVwcy9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Users/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlcnMvQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Users/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlcnMvRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Users/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlcnMvRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Users/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlcnMvRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Users/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlcnMvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/aaryangupta/Downloads/EnterpriseManagementApp-Team1_develop/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-l0l736zd44

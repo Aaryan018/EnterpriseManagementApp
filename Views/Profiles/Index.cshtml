@@ -1,0 +1,48 @@
+﻿@model EnterpriseManagementApp.Models.Profile
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<h2>Your Profile</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Profile Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Full Name:</strong> @Model.FirstName @Model.LastName</p>
+                <p><strong>Email:</strong> @Model.Email</p>
+
+                @if (string.IsNullOrEmpty(Model.PhoneNumber))
+                {
+                    <p><strong>Phone Number:</strong> Not provided</p>
+                }
+                else
+                {
+                    <p><strong>Phone Number:</strong> @Model.PhoneNumber</p>
+                }
+
+                @if (string.IsNullOrEmpty(Model.Address))
+                {
+                    <p><strong>Address:</strong> Not provided</p>
+                }
+                else
+                {
+                    <p><strong>Address:</strong> @Model.Address</p>
+                }
+
+                <!-- Display Role -->
+                <p><strong>Role:</strong> @Model.Role</p> <!-- Show the Role -->
+                <!-- Display Module -->
+                <p><strong>Module:</strong> @Model.Module</p> <!-- Show the Module -->
+                <!-- Logout Form -->
+                <form asp-action="Logout" method="post" class="form-inline">
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
