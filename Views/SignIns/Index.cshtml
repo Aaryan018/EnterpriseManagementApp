@@ -1,4 +1,4 @@
-﻿<!--@model EnterpriseManagementApp.Models.Authentication.SignIn
+﻿@model EnterpriseManagementApp.Models.Authentication.SignIn
 
 @{
     ViewData["Title"] = "Sign In";
@@ -66,15 +66,15 @@
 </head>
 <body>
     <div class="container">
-        <div class="auth-card">
+        @*<div class="auth-card">
             <div class="text-center mb-5">
                 <h1 class="h3 font-weight-normal">Welcome Back</h1>
                 <p class="text-muted">Sign in to continue to your account</p>
             </div>
 
-            <form method="post" asp-action="SignIn" class="needs-validation" novalidate>-->
-                <!-- Hidden field for returnUrl -->
-                <!--<input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+            <form method="post" asp-action="SignIn" class="needs-validation" novalidate>
+                 Hidden field for returnUrl 
+                <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
 
                 <div class="mb-4">
                     <label for="Email" class="form-label">Email Address</label>
@@ -92,37 +92,37 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-lg w-100 mb-4">Sign In</button>-->
+                <button type="submit" class="btn btn-primary btn-lg w-100 mb-4">Sign In</button>
 
-                <!-- Error Message -->
-                <!--@if (ViewBag.ErrorMessage != null)
+                 Error Message 
+                @if (ViewBag.ErrorMessage != null)
                 {
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         @ViewBag.ErrorMessage
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                }-->
+                }
 
-                <!-- Forgot Password and Create Account Links -->
-                <!--<div class="text-center auth-links">
+                 Forgot Password and Create Account Links 
+                <div class="text-center auth-links">
                     <p class="text-muted">
-                        Don't have an account?-->
-                        <!-- Corrected link to redirect to SignUp page -->
-                        <!--<a asp-controller="SignUps" asp-action="Index" class="text-decoration-none">Create account</a>
+                        Don't have an account?
+                         Corrected link to redirect to SignUp page 
+                        <a asp-controller="SignUps" asp-action="Index" class="text-decoration-none">Create account</a>
                     </p>
-                </div>-->
+                </div>
 
-                <!-- Remember Me checkbox -->
-                <!--<div class="mb-3 form-check">
+                 Remember Me checkbox 
+                <div class="mb-3 form-check">
                     <input type="checkbox" class="form-check-input" id="RememberMe" name="RememberMe">
                     <label class="form-check-label" for="RememberMe">Remember me</label>
                 </div>
             </form>
-        </div>
-    </div>-->
+        </div>*@
+    </div>
 
-    <!-- Bootstrap JS for interactive components -->
-    <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+     Bootstrap JS for interactive components 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Client-side validation
         (function () {
@@ -140,4 +140,4 @@
         })()
     </script>
 </body>
-</html>-->
+</html>

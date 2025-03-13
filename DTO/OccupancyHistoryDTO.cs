@@ -1,4 +1,4 @@
-﻿namespace Test2.DTO
+﻿namespace EnterpriseManagementApp.DTO
 {
     public class OccupancyHistoryDTO
     {

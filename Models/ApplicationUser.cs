@@ -34,6 +34,9 @@ namespace EnterpriseManagementApp.Models
 
         public string Role { get; set; } = "Client"; // Default role to Client
 
+        [MaxLength(50)]
+        public string? Module { get; set; }
+
 
 
         // Navigation property for Profile (made nullable)

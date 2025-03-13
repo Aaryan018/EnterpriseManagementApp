@@ -51,7 +51,8 @@ namespace EnterpriseManagementApp.Controllers
 
                 var model = new DashboardViewModel
                 {
-                    UserFullName = $"{currentUser.FirstName ?? "Unknown"} {currentUser.LastName ?? "Unknown"}",
+                    //UserFullName = $"{currentUser.FirstName ?? "Unknown"} {currentUser.LastName ?? "Unknown"}",
+                    UserFullName = $"{currentUser.FullName ?? "Unknown"}",
                     UserEmail = currentUser.Email ?? "No Email",
                     CanViewEmployeeList = currentUser.Role == "Manager" // Flag for Manager access to employee list
                 };
@@ -118,18 +119,18 @@ namespace EnterpriseManagementApp.Controllers
             model.TotalPayroll = await SafeSumAsync(_context.Payrolls.Select(p => (decimal?)p.TotalAmount ?? 0m));
             model.UpcomingPayments = await SafeCountAsync(_context.PayrollDetails
                 .Where(pd => pd.PaymentDate > DateTime.Now));
-            model.ActiveRentals = await SafeCountAsync(_context.RentHistories
-                .Where(rh => rh.RentDate <= DateTime.Now));
-            model.LeaseExpiring = await SafeCountAsync(_context.LeaseAgreements
-                .Where(la => la.EndDate < DateTime.Now.AddDays(7)));
+            //model.ActiveRentals = await SafeCountAsync(_context.RentHistories
+            //    .Where(rh => rh.RentDate <= DateTime.Now));
+            //model.LeaseExpiring = await SafeCountAsync(_context.LeaseAgreements
+            //    .Where(la => la.EndDate < DateTime.Now.AddDays(7)));
         }
 
         private async Task LoadHousingDashboard(DashboardViewModel model)
         {
-            model.ActiveRentals = await SafeCountAsync(_context.RentHistories
-                .Where(rh => rh.RentDate <= DateTime.Now));
-            model.LeaseExpiring = await SafeCountAsync(_context.LeaseAgreements
-                .Where(la => la.EndDate < DateTime.Now.AddDays(7)));
+            //model.ActiveRentals = await SafeCountAsync(_context.RentHistories
+            //    .Where(rh => rh.RentDate <= DateTime.Now));
+            //model.LeaseExpiring = await SafeCountAsync(_context.LeaseAgreements
+            //    .Where(la => la.EndDate < DateTime.Now.AddDays(7)));
         }
 
         // Helper method to safely handle database counts

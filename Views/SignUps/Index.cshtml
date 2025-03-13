@@ -1,48 +1,48 @@
-﻿<!--@model EnterpriseManagementApp.Models.Authentication.SignUp
+﻿@model EnterpriseManagementApp.Models.Authentication.SignUp
 
 @{
     ViewData["Title"] = "Sign Up";
 }
 
 <div class="auth-container">
-    <div class="auth-card">
+    @*<div class="auth-card">
         <h2>Create Account</h2>
         <form asp-action="Index" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>-->
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <!-- Email Field -->
-            <!--<div class="form-group">
+             Email Field 
+            <div class="form-group">
                 <label asp-for="Email" class="form-label">Email</label>
                 <input asp-for="Email" class="form-control form-control-lg" placeholder="Enter your email" />
                 <span asp-validation-for="Email" class="text-danger"></span>
-            </div>-->
+            </div>
 
-            <!-- Password Field -->
-            <!--<div class="form-group">
+             Password Field 
+            <div class="form-group">
                 <label asp-for="Password" class="form-label">Password</label>
                 <input asp-for="Password" type="password" class="form-control form-control-lg" placeholder="Create a password" />
                 <span asp-validation-for="Password" class="text-danger"></span>
-            </div>-->
+            </div>
 
-            <!-- Confirm Password Field -->
-            <!--<div class="form-group">
+             Confirm Password Field 
+            <div class="form-group">
                 <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
                 <input asp-for="ConfirmPassword" type="password" class="form-control form-control-lg" placeholder="Re-enter password" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>-->
+            </div>
 
-            <!-- Role Selection -->
-            <!--<div class="form-group">
+             Role Selection 
+            <div class="form-group">
                 <label asp-for="Role" class="form-label">Select Role</label>
                 <select asp-for="Role" class="form-control form-control-lg">
                     <option value="Manager">Manager</option>
                     <option value="Employee">Employee</option>
                 </select>
                 <span asp-validation-for="Role" class="text-danger"></span>
-            </div>-->
+            </div>
 
-            <!-- Module Selection -->
-            <!--<div class="form-group">
+             Module Selection 
+            <div class="form-group">
                 <label asp-for="Module" class="form-label">Select Module</label>
                 <select asp-for="Module" class="form-control form-control-lg">
                     <option value="HR">HR</option>
@@ -50,21 +50,21 @@
                     <option value="Housing">Housing</option>
                 </select>
                 <span asp-validation-for="Module" class="text-danger"></span>
-            </div>-->
+            </div>
 
-            <!-- Submit Button -->
-            <!--<button type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
-        </form>-->
+             Submit Button 
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
+        </form>
 
-        <!-- Redirect to Login if already have an account -->
-        <!--<div class="text-center mt-3">
+         Redirect to Login if already have an account 
+        <div class="text-center mt-3">
             <p>Already have an account? <a href="@Url.Action("Index", "SignIns")">Login here</a></p>
         </div>
-    </div>
-</div>-->
+    </div>*@
+</div>
 
-<!-- Styles -->
-<!--<style>
+ Styles 
+<style>
     .auth-container {
         display: flex;
         justify-content: center;
@@ -131,10 +131,10 @@
     .text-center a:hover {
         text-decoration: underline;
     }
-</style>-->
+</style>
 
-<!-- JavaScript for client-side validation (if not already in _Layout.cshtml) -->
-<!--@section Scripts {
+ JavaScript for client-side validation (if not already in _Layout.cshtml) 
+@section Scripts {
     @Html.Partial("_ValidationScriptsPartial")
 
-}-->
+}
