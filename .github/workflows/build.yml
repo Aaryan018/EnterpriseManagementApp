@@ -1,0 +1,36 @@
+name: .NET Build
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up .NET environment
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v3
+        with:
+            dotnet-version: '8.0.x'
+            include-prerelease: true
+
+
+      # Step 3: Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Step 4: Build the solution
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      # Step 5: Run tests (if you have tests)
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
