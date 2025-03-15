@@ -1,0 +1,72 @@
+﻿@model IEnumerable<EnterpriseManagementApp.Models.LeaveRequest>;
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>All Leave Requests</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Employee Name
+            </th>
+            @* <th> *@
+            @*     Employee ID *@
+            @* </th> *@
+            <th>
+                Employee Email
+            </th>
+
+            <th>
+                Start Date
+            </th>
+
+            <th>
+                End Date
+            </th>
+
+            <th>
+                Leave Type
+            </th>
+
+            <th>
+                Approval Status
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Employee.FullName)
+                </td>
+                @* <td> *@
+                @*     @Html.DisplayFor(modelItem => item.Employee.Id) *@
+                @* </td> *@
+                <td>
+                    @Html.DisplayFor(modelItem => item.Employee.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+                <td>
+                    @(item.ApprovalStatus ? "Approved" : "Pending/Denied")
+                </td>
+                <td>
+                    <a asp-action="Approve" asp-route-id="@item.Id">Approve</a> |
+                    <a asp-action="Deny" asp-route-id="@item.Id">Deny</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
