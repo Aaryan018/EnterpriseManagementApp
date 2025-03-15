@@ -1,0 +1,38 @@
+﻿@model EnterpriseManagementApp.Models.LeaveRequest;
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Leave Requests</h1>
+
+<div>
+    <h4>Leave Request</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Employee.FullName)
+        </dt>
+        <dt class = "col-sm-10">
+            @Html.DisplayNameFor(model => model.Employee.Email)
+        </dt>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Type)
+            </dt>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.StartDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayNameFor(model => model.EndDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ApprovalStatus)
+        </dt>
+
+    </dl>
+</div>
+<div>
+    <a asp-action="Approve" asp-route-id="@Model?.Id">Approve</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
+

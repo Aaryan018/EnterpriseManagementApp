@@ -1,5 +1,7 @@
 using EnterpriseManagementApp.Enums;
 
+namespace EnterpriseManagementApp.Models;
+
 public class LeaveRequest
 {
     public int Id { get; set; }
