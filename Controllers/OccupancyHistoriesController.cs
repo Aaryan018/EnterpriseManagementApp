@@ -25,8 +25,17 @@ namespace EnterpriseManagementApp.Controllers
         // GET: OccupancyHistories
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.OccupancyHistories.Include(o => o.Asset).Include(o => o.Customer);
+            // Return Pending Records first, Approved second, and Denied last
+            var applicationDbContext = _context.OccupancyHistories
+                .Include(o => o.Asset)
+                .Include(o => o.Customer)
+                .OrderBy(oh => oh.Status == "Pending" ? 0 :
+                              oh.Status == "Approved" ? 1 : 2)  // Custom order
+                .ThenBy(oh => oh.Status)  // Optional: If you want to break ties (e.g., sort by Asset/Customer alphabetically)
+                .AsQueryable();  // Ensure we have a queryable object
+
             return View(await applicationDbContext.ToListAsync());
+
         }
 
         // GET: OccupancyHistories/Details/5
@@ -103,10 +112,6 @@ namespace EnterpriseManagementApp.Controllers
                     Debug.WriteLine("ammount due: " + occupancyHistory.AmmountDue);
                     Debug.WriteLine("status: " + occupancyHistory.Status);
 
-                    //// Add to the context and save changes
-                    //_context.Add(occupancyHistory);
-                    //await _context.SaveChangesAsync();
-
                     try
                     {
                         // Add to the context and save changes
@@ -114,7 +119,8 @@ namespace EnterpriseManagementApp.Controllers
                         await _context.SaveChangesAsync();
 
                         // If everything is successful, you can return a success message as JSON.
-                        return Json(new { success = true, message = "Occupancy history created successfully." });
+                        //return Json(new { success = true, message = "Occupancy history created successfully." });
+                        return RedirectToAction(nameof(Index));
                     }
                     catch (DbUpdateException dbEx)
                     {
@@ -125,8 +131,37 @@ namespace EnterpriseManagementApp.Controllers
                         {
                             Debug.WriteLine($"Inner exception: {dbEx.InnerException.Message}");
                         }
+
+                        ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "FullName", occupancyHistory.CustomerId);
+
+                        // Exclude AssetIds that are already in the OccupancyHistory for the selected CustomerId
+                        var occupiedAssets = _context.OccupancyHistories
+                                                    .Where(oh => oh.CustomerId == occupancyHistory.CustomerId)
+                                                    .Select(oh => oh.AssetId)
+                                                    .ToList();
+                        var availableAssets = _context.Assets
+                                                      .Where(a => !occupiedAssets.Contains(a.AssetId))
+                                                      .Select(a => new { a.AssetId, a.Name })
+                                                      .ToList();
+
+                        // If no available assets, add all assets to the ViewData and set a message
+                        if (availableAssets.Count == 0)
+                        {
+                            // Get all assets (in case there are no available ones)
+                            availableAssets = _context.Assets
+                                                      .Select(a => new { a.AssetId, a.Name })
+                                                      .ToList();
+
+                            // Set a message to inform the user
+                            ViewData["Message"] = "No available assets for the selected customer.";
+                        }
+
+                        ViewData["AssetId"] = new SelectList(availableAssets, "AssetId", "Name");
+
+                        return View(occupancyHistory);
+
                         // Return a JSON response with the error details
-                        return Json(new { success = false, message = "Database error occurred while saving the data. Please try again later.", error = dbEx.Message });
+                        // return Json(new { success = false, message = "Database error occurred while saving the data. Please try again later.", error = dbEx.Message });
                     }
                     catch (Exception ex)
                     {
@@ -136,28 +171,10 @@ namespace EnterpriseManagementApp.Controllers
                         // Return a JSON response with the error details
                         return Json(new { success = false, message = "An unexpected error occurred. Please try again later.", error = ex.Message });
                     }
-
-
-
-                    Debug.WriteLine("OH create - CP3. Context updated");
-
-                    var occupancyHistoryDTO = new OccupancyHistoryDTO
-                    {
-                        OccupancyHistoryId = occupancyHistory.OccupancyHistoryId,
-                        CustomerId = occupancyHistory.CustomerId,
-                        AssetId = occupancyHistory.AssetId,
-                        Start = occupancyHistory.Start,
-                        End = occupancyHistory.End,
-                        Paid = occupancyHistory.Paid,
-                        AmmountDue = occupancyHistory.AmmountDue,
-                        Status = occupancyHistory.Status
-                    };
-
-                    // Return a success response with the created occupancy history details
-                    return Json(new { success = true, message = "Occupancy history created successfully.", data = occupancyHistoryDTO });
                 }
                 catch (Exception ex)
                 {
+                    Debug.WriteLine("Geneal exception");
                     // Return error if there was an exception
                     return Json(new { success = false, message = "An error occurred while creating the occupancy history.", error = ex.Message });
                 }
@@ -169,7 +186,21 @@ namespace EnterpriseManagementApp.Controllers
                 .Select(x => new { field = x.Key, errors = x.Value.Errors.Select(e => e.ErrorMessage) })
                 .ToList();
 
-            return Json(new { success = false, message = "Validation failed.", errors });
+            Debug.WriteLine("CP4 - errors:" + errors);
+            Debug.WriteLine("CP4 - Check properties");
+            Debug.WriteLine("OCID: " + occupancyHistory.OccupancyHistoryId);
+            Debug.WriteLine("CusId: " + occupancyHistory.CustomerId);
+            Debug.WriteLine("AssetId: " + occupancyHistory.AssetId);
+            Debug.WriteLine("Cus: " + occupancyHistory.Customer);
+            Debug.WriteLine("Asset: " + occupancyHistory.Asset);
+            Debug.WriteLine("start: " + occupancyHistory.Start);
+            Debug.WriteLine("end: " + occupancyHistory.End);
+            Debug.WriteLine("paid: " + occupancyHistory.Paid);
+            Debug.WriteLine("ammount due: " + occupancyHistory.AmmountDue);
+            Debug.WriteLine("status: " + occupancyHistory.Status);
+
+            //return Json(new { success = false, message = "Validation failed.", errors });
+            return View(occupancyHistory);
         }
 
         //[HttpPost]
@@ -317,6 +348,24 @@ namespace EnterpriseManagementApp.Controllers
         private bool OccupancyHistoryExists(Guid id)
         {
             return _context.OccupancyHistories.Any(e => Guid.Parse(e.CustomerId) == id);
+        }
+
+        // GET: OccupancyHistories/GetAvailableAssets
+        public JsonResult GetAvailableAssets(string customerId)
+        {
+            // Get the occupied AssetIds for the given CustomerId
+            var occupiedAssets = _context.OccupancyHistories
+                                        .Where(oh => oh.CustomerId == customerId)
+                                        .Select(oh => oh.AssetId)
+                                        .ToList();
+
+            // Get the available assets by excluding the occupied ones
+            var availableAssets = _context.Assets
+                                          .Where(a => !occupiedAssets.Contains(a.AssetId))
+                                          .Select(a => new { a.AssetId, a.Name })
+                                          .ToList();
+
+            return Json(availableAssets);
         }
     }
 }

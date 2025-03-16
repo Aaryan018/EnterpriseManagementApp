@@ -210,7 +210,7 @@ namespace EnterpriseManagementApp
                         End = DateOnly.FromDateTime(DateTime.Now),
                         Paid = 0.00,
                         AmmountDue = 12.99,
-                        Status = "Pending"
+                        Status = "Approved"
                     };
 
                     dbContext.OccupancyHistories.Add(OH);

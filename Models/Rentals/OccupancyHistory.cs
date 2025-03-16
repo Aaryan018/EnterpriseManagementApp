@@ -30,6 +30,6 @@ namespace EnterpriseManagementApp.Models
         public double AmmountDue { get; set; }
 
         // Approved, Pending, Denied
-        public string? Status { get; set; }
+        public string Status { get; set; } = "Pending";
     }
 }
