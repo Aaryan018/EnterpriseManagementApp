@@ -27,14 +27,15 @@
                 </div>
             </section>
         }
-        else if (User.IsInRole("Client"))
+        else if (User.IsInRole("Customer"))
         {
             <section class="dashboard-card client-card">
                 <h2 class="card-title">Welcome, Client!</h2>
                 <p class="card-description">View your rentals and request changes.</p>
                 <div class="card-actions">
-                    <a class="btn btn-info" href="@Url.Action("Index", "Renters")"><i class="fas fa-home"></i> Your Rentals</a>
+                    <a class="btn btn-info" href="@Url.Action("Index", "CustomerOccupancyHistory")"><i class="fas fa-home"></i> Assets </a>
                     <a class="btn btn-success" href="@Url.Action("RequestChange", "Renters")"><i class="fas fa-edit"></i> Request Change</a>
+                    <a class="btn btn-info" href="@Url.Action("Index", "AssetInvoices")"><i class="fas fa-home"></i> Your Invoices</a>
                 </div>
             </section>
         }

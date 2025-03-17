@@ -1,19 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using EnterpriseManagementApp.Models.Rentals;
 
 namespace EnterpriseManagementApp.Models
 {
     public class OccupancyHistory
     {
         [Key]
-        public Guid OccupancyHistoryId { get; set; }
+        public Guid OccupancyHistoryId { get; set; } = Guid.NewGuid();
 
         // ___________ Relationship Based Attributes ___________
-        //public Guid CustomerId { get; set; }
         public string CustomerId { get; set; }  // Foreign Key to Customer (using string to match IdentityUser)
         public Customer? Customer { get; set; }
 
         public Guid AssetId { get; set; }
         public Asset? Asset { get; set; }
+
+
+        // Navigation property for the related AssetInvoices
+        public List<AssetInvoice> AssetInvoices { get; set; } = new List<AssetInvoice>();
 
 
         // _______________ Own Table Attributes _______________

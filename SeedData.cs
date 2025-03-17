@@ -1,4 +1,7 @@
 ﻿using EnterpriseManagementApp.Models;
+using EnterpriseManagementApp.Models.Rentals;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +20,22 @@ namespace EnterpriseManagementApp
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
+            //var signInManager = serviceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
+            //var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>(); // Access HTTP context
+
+            //// Sign out the current user (clear the session/cookie)
+            //await signInManager.SignOutAsync();
+            //await httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            //// Explicitly expire authentication cookie
+            //var cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions
+            //{
+            //    Expires = DateTime.UtcNow.AddDays(-1) // Expire the cookie immediately
+            //};
+            //httpContextAccessor.HttpContext.Response.Cookies.Append(".AspNetCore.Cookies", "", cookieOptions);
+
+            //Console.WriteLine("User signed out and cookie expired after database seeding.");
+
 
             // Ensure roles are created
             string[] roles = { "Admin", "Manager", "Customer" };
@@ -196,7 +215,11 @@ namespace EnterpriseManagementApp
             // Seed a Sample OccupancyHistory
             if (!dbContext.OccupancyHistories.Any())
             {
-                var renter = dbContext.Customers.FirstOrDefault();
+                // Specify the email address you want to find
+                string targetEmail = "client@enterprise.com";
+
+                // Find the customer with the given email
+                var renter = dbContext.Customers.FirstOrDefault(c => c.Email == targetEmail);
                 var assetTemp = dbContext.Assets.FirstOrDefault();
 
                 if (renter != null && assetTemp != null)
@@ -206,6 +229,8 @@ namespace EnterpriseManagementApp
                         OccupancyHistoryId = Guid.NewGuid(),
                         CustomerId = renter.Id,
                         AssetId = assetTemp.AssetId,
+                        Customer = renter,
+                        Asset = assetTemp,
                         Start = DateOnly.FromDateTime(DateTime.Now),
                         End = DateOnly.FromDateTime(DateTime.Now.AddMonths(2)),
                         Paid = 0.00,
@@ -234,6 +259,47 @@ namespace EnterpriseManagementApp
                 var assetCount = dbContext.Assets.Count();
                 Console.WriteLine($"Found {assetCount} assets in the database.");
             }
+
+            // Seed a Sample AssetInvoice
+            if (!dbContext.AssetInvoices.Any())
+            {
+                var occupancyHistory = dbContext.OccupancyHistories.FirstOrDefault();
+
+                if (occupancyHistory != null)
+                {
+
+                    var AI = new AssetInvoice
+                    {
+                        AssetInvoiceId = Guid.NewGuid(),
+                        CustomerId = occupancyHistory.CustomerId,
+                        AssetId = occupancyHistory.AssetId,
+                        OccupancyHistory = occupancyHistory,
+                        DatePaid = DateTime.Now,
+                        AmmountPaid = 10
+                    };
+
+                    dbContext.AssetInvoices.Add(AI);
+                    try
+                    {
+                        await dbContext.SaveChangesAsync();
+                        Console.WriteLine($"Sample Asset Invoice created successfully");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error seeding Asset Invoice: {ex.Message}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No OccuapncyHistory. Please seed OccupancyHistory first.");
+                }
+            }
+            else
+            {
+                var assetCount = dbContext.Assets.Count();
+                Console.WriteLine($"Found {assetCount} assets in the database.");
+            }
+
 
         }
 

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using EnterpriseManagementApp.Models;
 //using Test2.Models.OldModels;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using EnterpriseManagementApp.Models.Rentals;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
@@ -27,6 +28,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Asset> Assets { get; set; }
     public DbSet<OccupancyHistory> OccupancyHistories { get; set; }
+    public DbSet<AssetInvoice> AssetInvoices { get; set; }
 
     public DbSet<RentChange> RentChanges { get; set; }
 
@@ -81,6 +83,23 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .WithMany(a => a.RentChanges)  // Asset can have many RentChanges
             .HasForeignKey(rc => rc.AssetId)  // Foreign key in RentChange
             .OnDelete(DeleteBehavior.Cascade);  // You can change the delete behavior as needed
+
+        // Configure the relationship: One OccupancyHistory has many AssetInvoices
+        modelBuilder.Entity<AssetInvoice>()
+            .HasKey(ai => ai.AssetInvoiceId); // Primary key for AssetInvoice (separate from composite FK)
+
+        // Define the composite foreign key relationship between AssetInvoice and OccupancyHistory
+        modelBuilder.Entity<AssetInvoice>()
+            .HasOne(ai => ai.OccupancyHistory)
+            .WithMany(oh => oh.AssetInvoices)
+            .HasForeignKey(ai => new { ai.CustomerId, ai.AssetId });  // Composite foreign key
+
+        // Optionally, set delete behavior if required
+        modelBuilder.Entity<AssetInvoice>()
+            .HasOne(ai => ai.OccupancyHistory)
+            .WithMany(oh => oh.AssetInvoices)
+            .HasForeignKey(ai => new { ai.CustomerId, ai.AssetId })
+            .OnDelete(DeleteBehavior.Cascade);
 
         // invokes base class implementation of the 'OnModelCreating' method; 
         base.OnModelCreating(modelBuilder);
