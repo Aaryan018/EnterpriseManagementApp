@@ -59,6 +59,27 @@ namespace EnterpriseManagementApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Requests/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Requests/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(LeaveRequest leaveRequest)
+        {
+            if (ModelState.IsValid)
+            {
+                leaveRequest.ApprovalStatus = false; // Default status is pending
+                _context.LeaveRequests.Add(leaveRequest);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(leaveRequest);
+        }
+
         private bool LeaveRequestExists(int id)
         {
             return _context.LeaveRequests.Any(e => e.Id == id);

@@ -1,0 +1,64 @@
+﻿@model EnterpriseManagementApp.Models.LeaveRequest
+@using EnterpriseManagementApp.Enums
+
+
+<h2 class="mb-4">Create a New Leave Request</h2>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!-- Limit form width -->
+            <form asp-action="Create" method="post">
+
+                <!-- Employee ID (Auto-populated) -->
+                <div class="form-group">
+                    <label asp-for="EmployeeId" class="control-label">Employee ID</label>
+                    <input asp-for="EmployeeId" class="form-control" readonly value="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" />
+                    <span asp-validation-for="EmployeeId" class="text-danger"></span>
+                </div>
+
+                <!-- Start Date -->
+                <div class="form-group">
+                    <label asp-for="StartDate" class="control-label">Start Date</label>
+                    <input asp-for="StartDate" type="date" class="form-control" required />
+                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                </div>
+
+                <!-- End Date -->
+                <div class="form-group">
+                    <label asp-for="EndDate" class="control-label">End Date</label>
+                    <input asp-for="EndDate" type="date" class="form-control" required />
+                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                </div>
+
+                <!-- Leave Type -->
+                <div class="form-group">
+                    <label asp-for="Type" class="control-label">Leave Type</label>
+                    <select asp-for="Type" class="form-control" asp-items="Html.GetEnumSelectList<LeaveType>()">
+                        <option value="">-- Select Leave Type --</option>
+                    </select>
+                    <span asp-validation-for="Type" class="text-danger"></span>
+                </div>
+
+                <!-- Paid Leave -->
+                <div class="form-group form-check">
+                    <input asp-for="Paid" type="checkbox" class="form-check-input" />
+                    <label asp-for="Paid" class="form-check-label">Is Paid Leave?</label>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-group text-center mt-3">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

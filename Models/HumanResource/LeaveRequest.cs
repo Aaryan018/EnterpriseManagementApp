@@ -18,5 +18,5 @@ public class LeaveRequest
     // if it is a paid or unpaid leave
     public bool Paid { get; set; }
 
-    public Employee Employee { get; set; }
+    public Employee? Employee { get; set; }
 }
