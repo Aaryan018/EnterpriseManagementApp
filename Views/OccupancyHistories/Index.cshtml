@@ -12,9 +12,9 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.OccupancyHistoryId)
-            </th>
+            @* <th> *@
+            @*     @Html.DisplayNameFor(model => model.OccupancyHistoryId) *@
+            @* </th> *@
             <th>
                 @Html.DisplayNameFor(model => model.Customer)
             </th>
@@ -31,7 +31,10 @@
                 @Html.DisplayNameFor(model => model.Paid)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AmmountDue)
+                @Html.DisplayNameFor(model => model.TotalDue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RemainingBalance)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Status)
@@ -42,9 +45,9 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.OccupancyHistoryId)
-            </td>
+            @* <td> *@
+            @*     @Html.DisplayFor(modelItem => item.OccupancyHistoryId) *@
+            @* </td> *@
             <td>
                 @Html.DisplayFor(modelItem => item.Customer.Address)
             </td>
@@ -61,7 +64,10 @@
                 @Html.DisplayFor(modelItem => item.Paid)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.AmmountDue)
+                @Html.DisplayFor(modelItem => item.TotalDue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RemainingBalance)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Status)

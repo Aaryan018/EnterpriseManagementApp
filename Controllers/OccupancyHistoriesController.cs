@@ -25,16 +25,54 @@ namespace EnterpriseManagementApp.Controllers
         // GET: OccupancyHistories
         public async Task<IActionResult> Index()
         {
-            // Return Pending Records first, Approved second, and Denied last
-            var applicationDbContext = _context.OccupancyHistories
+            // Retrieve the records, ordered by status
+            var occupancyHistories = await _context.OccupancyHistories
                 .Include(o => o.Asset)
                 .Include(o => o.Customer)
                 .OrderBy(oh => oh.Status == "Pending" ? 0 :
                               oh.Status == "Approved" ? 1 : 2)  // Custom order
-                .ThenBy(oh => oh.Status)  // Optional: If you want to break ties (e.g., sort by Asset/Customer alphabetically)
-                .AsQueryable();  // Ensure we have a queryable object
+                .ThenBy(oh => oh.Status)  // Optional: if you want to break ties (e.g., alphabetically by Asset/Customer)
+                .ToListAsync();  // Load the data into memory
 
-            return View(await applicationDbContext.ToListAsync());
+            // Loop through the records and check/update properties as needed
+            foreach (var occupancyHistory in occupancyHistories)
+            {
+                // Access the related Asset data
+                var asset = occupancyHistory.Asset;
+
+                // Update each occupancyHistory's Ammount due and Next payment values ...
+                // Ammount due is Asset.RentRate * 'how many months there are between start and end date of occupancyHistry record
+                if (asset != null)
+                {
+                    // ... 
+                    // DateOnly today = DateOnly.FromDateTime(DateTime.Today); 
+
+                    DateOnly startDate = occupancyHistory.Start;
+                    DateOnly endDate = occupancyHistory.End;
+
+                    // Calculate the months difference between Start and End dates
+                    int monthsDifference = endDate.Month - startDate.Month + 12 * (endDate.Year - startDate.Year);
+
+                    // Adjust months difference if the End day is before the Start day in the month
+                    if (endDate.Day < startDate.Day)
+                    {
+                        monthsDifference--; // Subtract one month if the End date is before the Start date in the month
+                    }
+
+                    occupancyHistory.TotalDue = monthsDifference * asset.RentRate;
+
+                    occupancyHistory.RemainingBalance = occupancyHistory.TotalDue - occupancyHistory.Paid;
+
+                    // Mark the entity as modified
+                    _context.OccupancyHistories.Update(occupancyHistory);
+                }
+            }
+
+            // Save changes to the database
+            await _context.SaveChangesAsync();
+
+            // Pass the modified records to the view
+            return View(occupancyHistories);
 
         }
 
@@ -99,6 +137,7 @@ namespace EnterpriseManagementApp.Controllers
 
                     occupancyHistory.OccupancyHistoryId = Guid.NewGuid();
                     occupancyHistory.Status = "Pending";
+                    occupancyHistory.TotalDue = occupancyHistory.Asset.RentRate;
 
                     Debug.WriteLine("OH - CP2 - Check properties");
                     Debug.WriteLine("OCID: " + occupancyHistory.OccupancyHistoryId);
@@ -109,7 +148,7 @@ namespace EnterpriseManagementApp.Controllers
                     Debug.WriteLine("start: " + occupancyHistory.Start);
                     Debug.WriteLine("end: " + occupancyHistory.End);
                     Debug.WriteLine("paid: " + occupancyHistory.Paid);
-                    Debug.WriteLine("ammount due: " + occupancyHistory.AmmountDue);
+                    Debug.WriteLine("total due: " + occupancyHistory.TotalDue);
                     Debug.WriteLine("status: " + occupancyHistory.Status);
 
                     try
@@ -143,6 +182,13 @@ namespace EnterpriseManagementApp.Controllers
                                                       .Where(a => !occupiedAssets.Contains(a.AssetId))
                                                       .Select(a => new { a.AssetId, a.Name })
                                                       .ToList();
+
+                        // If some alternative assets available, leave message
+                        if (availableAssets.Count > 0)
+                        {
+                            // Set a message to inform the user
+                            ViewData["Message"] = "Previously selected Asset was already leased to Renter. Please select alternate option from newly provided options.";
+                        }
 
                         // If no available assets, add all assets to the ViewData and set a message
                         if (availableAssets.Count == 0)
@@ -196,7 +242,7 @@ namespace EnterpriseManagementApp.Controllers
             Debug.WriteLine("start: " + occupancyHistory.Start);
             Debug.WriteLine("end: " + occupancyHistory.End);
             Debug.WriteLine("paid: " + occupancyHistory.Paid);
-            Debug.WriteLine("ammount due: " + occupancyHistory.AmmountDue);
+            Debug.WriteLine("total due: " + occupancyHistory.TotalDue);
             Debug.WriteLine("status: " + occupancyHistory.Status);
 
             //return Json(new { success = false, message = "Validation failed.", errors });
@@ -298,7 +344,7 @@ namespace EnterpriseManagementApp.Controllers
             Debug.WriteLine("start: " + occupancyHistory.Start);
             Debug.WriteLine("end: " + occupancyHistory.End);
             Debug.WriteLine("paid: " + occupancyHistory.Paid);
-            Debug.WriteLine("ammount due: " + occupancyHistory.AmmountDue);
+            Debug.WriteLine("total due: " + occupancyHistory.TotalDue);
             Debug.WriteLine("status: " + occupancyHistory.Status);
             return View(occupancyHistory);
         }

@@ -27,7 +27,9 @@ namespace EnterpriseManagementApp.Models
 
         public double Paid { get; set; }
 
-        public double AmmountDue { get; set; }
+        public double TotalDue { get; set; }
+
+        public double RemainingBalance { get; set; } = 0.0;
 
         // Approved, Pending, Denied
         public string Status { get; set; } = "Pending";

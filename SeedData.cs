@@ -207,9 +207,9 @@ namespace EnterpriseManagementApp
                         CustomerId = renter.Id,
                         AssetId = assetTemp.AssetId,
                         Start = DateOnly.FromDateTime(DateTime.Now),
-                        End = DateOnly.FromDateTime(DateTime.Now),
+                        End = DateOnly.FromDateTime(DateTime.Now.AddMonths(2)),
                         Paid = 0.00,
-                        AmmountDue = 12.99,
+                        TotalDue = 0.00,
                         Status = "Approved"
                     };
 
