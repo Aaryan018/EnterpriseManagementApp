@@ -7,11 +7,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace EnterpriseManagementApp
-
 {
     public class SeedData
     {
-
         public static async Task Initialize(IServiceProvider serviceProvider)
         {
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
@@ -88,7 +86,6 @@ namespace EnterpriseManagementApp
             // Seed a Sample Asset
             if (!dbContext.Assets.Any())
             {
-
                 var asset = new Asset
                 {
                     AssetId = Guid.NewGuid(),
@@ -101,7 +98,6 @@ namespace EnterpriseManagementApp
                     CreatedAt = DateOnly.FromDateTime(DateTime.Now),
                     UpdatedAt = DateOnly.FromDateTime(DateTime.Now)
                 };
-
 
                 var asset2 = new Asset
                 {
@@ -126,14 +122,12 @@ namespace EnterpriseManagementApp
                 {
                     Console.WriteLine($"Error seeding Asset: {ex.Message}");
                 }
-
             }
             else
             {
                 var assetCount = dbContext.Assets.Count();
                 Console.WriteLine($"Found {assetCount} assets in the database.");
             }
-
 
             // Seed Customer User
             if (userManager.Users.All(u => u.UserName != "client@enterprise.com"))
@@ -226,7 +220,7 @@ namespace EnterpriseManagementApp
                 }
                 else
                 {
-                    Console.WriteLine("No renter and/or asset found to seed a OccuapncyHistory. Please seed renter and/or asset first.");
+                    Console.WriteLine("No renter and/or asset found to seed a OccupancyHistory. Please seed renter and/or asset first.");
                 }
             }
             else
@@ -235,9 +229,41 @@ namespace EnterpriseManagementApp
                 Console.WriteLine($"Found {assetCount} assets in the database.");
             }
 
+            // Seed RentChange Data - Removed RentAmount and RentChangeDate
+            if (!dbContext.RentChanges.Any())
+            {
+                var customer = dbContext.Customers.FirstOrDefault();
+                var asset = dbContext.Assets.FirstOrDefault();
+
+                if (customer != null && asset != null)
+                {
+                    var rentChange = new RentChange
+                    {
+                        UserId = customer.Id, // Set the correct UserId here
+                        // Add any other properties needed here
+                    };
+
+                    dbContext.RentChanges.Add(rentChange);
+                    try
+                    {
+                        await dbContext.SaveChangesAsync();
+                        Console.WriteLine($"RentChange created successfully for User={customer.FullName}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error seeding RentChange: {ex.Message}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No customer or asset found to seed RentChange. Please seed customer and asset first.");
+                }
+            }
+            else
+            {
+                var rentChangeCount = dbContext.RentChanges.Count();
+                Console.WriteLine($"Found {rentChangeCount} RentChange records in the database.");
+            }
         }
-
-
-
     }
 }
