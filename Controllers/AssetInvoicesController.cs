@@ -132,7 +132,7 @@ namespace EnterpriseManagementApp.Controllers
 
                     _context.Add(assetInvoice);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index", "CustomerOccupancyHistory");
                 }
                 
             } else

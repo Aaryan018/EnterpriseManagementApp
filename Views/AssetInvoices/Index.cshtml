@@ -1,49 +1,128 @@
 ﻿@model IEnumerable<EnterpriseManagementApp.Models.Rentals.AssetInvoice>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "My Invoices";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>My Invoices</h1>
+<!-- Page Title -->
+<h1 class="page-title">My Invoices</h1>
 
-<p>
-    @* <a asp-action="Create">Create New</a> *@
-</p>
-<table class="table">
+<!-- Table of Invoices -->
+<table class="assets-table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.OccupancyHistory)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DatePaid)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AmmountPaid)
-            </th>
-            <th></th>
+            <th>AssetId</th>
+            <th>@Html.DisplayNameFor(model => model.DatePaid)</th>
+            <th>@Html.DisplayNameFor(model => model.AmmountPaid)</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.OccupancyHistory.OccupancyHistoryId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DatePaid)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AmmountPaid)
-            </td>
-            <td>
-            @*     <a asp-action="Edit" asp-route-id="@item.AssetInvoiceId">Edit</a> | *@
-            @*     <a asp-action="Details" asp-route-id="@item.AssetInvoiceId">Details</a> | *@
-            @*     <a asp-action="Delete" asp-route-id="@item.AssetInvoiceId">Delete</a> *@
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.OccupancyHistory.AssetId)</td>
+                <td>@Html.DisplayFor(modelItem => item.DatePaid)</td>
+                <td>@Html.DisplayFor(modelItem => item.AmmountPaid)</td>
+            </tr>
+        }
     </tbody>
 </table>
-<a class="btn btn-info" href="@Url.Action("Index", "CustomerOccupancyHistory")"><i class="fas fa-home"></i> See Your Assets </a>
+
+<!-- Navigation Button -->
+<a class="btn btn-info" href="@Url.Action("Index", "CustomerOccupancyHistory")">
+    <i class="fas fa-home"></i> See Your Assets
+</a>
+
+<!-- Embedded CSS for Styling -->
+<style>
+    /* General Body Styles */
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: #fff;
+        color: #333;
+        margin: 0;
+        padding: 30px;
+        box-sizing: border-box;
+    }
+
+    /* Page Title */
+    .page-title {
+        color: #333;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 40px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-align: left;
+    }
+
+    /* Table Styles */
+    .assets-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 0 auto;
+        background-color: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+        .assets-table th,
+        .assets-table td {
+            padding: 18px;
+            text-align: left;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .assets-table th {
+            background-color: #007bff;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .assets-table td {
+            background-color: #fafafa;
+            color: #333;
+        }
+
+        .assets-table tr:nth-child(even) td {
+            background-color: #f8f9fa;
+        }
+
+        .assets-table tr:hover td {
+            background-color: #e9ecef;
+            cursor: pointer;
+        }
+
+    /* Button Styles */
+    .btn {
+        display: inline-block;
+        padding: 12px 30px;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-info {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+        .btn-info:hover {
+            background-color: #138496;
+            transform: scale(1.05);
+        }
+
+    /* Icon inside the Button */
+    .fas {
+        margin-right: 8px;
+    }
+</style>

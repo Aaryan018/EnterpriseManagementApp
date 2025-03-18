@@ -56,15 +56,15 @@ namespace EnterpriseManagementApp.Controllers
                 var roles = await _userManager.GetRolesAsync(user);
                 Console.WriteLine($"User {user.Email} logged in with roles: {string.Join(", ", roles)}");
 
-                if (roles.Contains("Manager") || roles.Contains("Client"))
+                if (roles.Contains("Manager") || roles.Contains("Client") || roles.Contains("Employee"))
                 {
                     // Redirect both Manager and Client to Home/Index
                     Console.WriteLine("Redirecting to Home/Index for Manager or Client");
                     return RedirectToAction("Index", "Home");
                 }
 
-                Console.WriteLine("No specific role matched, redirecting to SignIn.");
-                return RedirectToAction("SignIn", "Account");
+                Console.WriteLine("No specific role matched, redirect somewhere ...");
+                return RedirectToAction("Index", "Home");
             }
 
             ModelState.AddModelError(string.Empty, "Invalid login attempt.");
@@ -151,6 +151,11 @@ namespace EnterpriseManagementApp.Controllers
                 else if (model.Role == "Client")
                 {
                     Console.WriteLine("Redirecting to Renters/Index for Client");
+                    return RedirectToAction("Index", "Home"); // Updated for Client
+                }
+                else if (model.Role == "Employee")
+                {
+                    Console.WriteLine("Redirecting to Renters/Index for Employee");
                     return RedirectToAction("Index", "Home"); // Updated for Client
                 }
 

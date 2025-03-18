@@ -20,25 +20,10 @@ namespace EnterpriseManagementApp
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
-            //var signInManager = serviceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
-            //var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>(); // Access HTTP context
-
-            //// Sign out the current user (clear the session/cookie)
-            //await signInManager.SignOutAsync();
-            //await httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-            //// Explicitly expire authentication cookie
-            //var cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions
-            //{
-            //    Expires = DateTime.UtcNow.AddDays(-1) // Expire the cookie immediately
-            //};
-            //httpContextAccessor.HttpContext.Response.Cookies.Append(".AspNetCore.Cookies", "", cookieOptions);
-
-            //Console.WriteLine("User signed out and cookie expired after database seeding.");
 
 
             // Ensure roles are created
-            string[] roles = { "Admin", "Manager", "Client" };
+            string[] roles = { "Employee", "Manager", "Client" };
             foreach (var role in roles)
             {
                 if (!await roleManager.RoleExistsAsync(role))
@@ -48,30 +33,31 @@ namespace EnterpriseManagementApp
                 }
             }
 
-            // Seed Admin User
-            if (userManager.Users.All(u => u.UserName != "admin@enterprise.com"))
+            // Seed Employee User
+            if (userManager.Users.All(u => u.UserName != "Employee@enterprise.com"))
             {
-                var admin = new Employee
+                var employee = new Employee
                 {
-                    UserName = "admin@enterprise.com",
-                    Email = "admin@enterprise.com",
+                    UserName = "Employee@enterprise.com",
+                    Email = "Employee@enterprise.com",
                     EmailConfirmed = true,
-                    FullName = "Adam Min",
-                    Address = "Adm Way 1220",
+                    FullName = "Emp Loyalee",
+                    Address = "E way 1220",
                     PhoneNumber = "111-222-2828",
-                    EmergencyContact = "911-911-9111"
+                    EmergencyContact = "911-911-9111",
+                    Role = "Employee"
                 };
-                var result = await userManager.CreateAsync(admin, "Admin@123");
+                var result = await userManager.CreateAsync(employee, "Employee@123");
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(admin, "Admin");
-                    Console.WriteLine("Admin user created successfully.");
+                    await userManager.AddToRoleAsync(employee, "Employee");
+                    Console.WriteLine("Employee user created successfully.");
                 }
                 else
                 {
                     foreach (var error in result.Errors)
                     {
-                        Console.WriteLine($"Error creating Admin user: {error.Description}");
+                        Console.WriteLine($"Error creating Employee user: {error.Description}");
                     }
                 }
             }
@@ -87,7 +73,8 @@ namespace EnterpriseManagementApp
                     FullName = "Mana Ger",
                     Address = "Mng Way 4440",
                     PhoneNumber = "111-222-2828",
-                    EmergencyContact = "911-911-9111"
+                    EmergencyContact = "911-911-9111",
+                    Role = "Manager"
                 };
                 var result = await userManager.CreateAsync(manager, "Manager@123");
                 if (result.Succeeded)
@@ -166,7 +153,8 @@ namespace EnterpriseManagementApp
                     Address = "Clients Way @ 4440",
                     PhoneNumber = "111-222-2828",
                     EmergencyContact = "911-911-9111",
-                    FamilyDoctor = "fred Boe"
+                    FamilyDoctor = "fred Boe",
+                    Role = "Client"
                 };
                 var result = await userManager.CreateAsync(client, "Client@123");
                 if (result.Succeeded)
@@ -195,7 +183,8 @@ namespace EnterpriseManagementApp
                     Address = "Clients Way @ 5550",
                     PhoneNumber = "111-222-2828",
                     EmergencyContact = "911-911-9111",
-                    FamilyDoctor = "fred Boe"
+                    FamilyDoctor = "fred Boe",
+                    Role = "Client"
                 };
                 var result = await userManager.CreateAsync(client, "Client@123");
                 if (result.Succeeded)
