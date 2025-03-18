@@ -38,7 +38,7 @@ namespace EnterpriseManagementApp
 
 
             // Ensure roles are created
-            string[] roles = { "Admin", "Manager", "Customer" };
+            string[] roles = { "Admin", "Manager", "Client" };
             foreach (var role in roles)
             {
                 if (!await roleManager.RoleExistsAsync(role))
@@ -154,7 +154,7 @@ namespace EnterpriseManagementApp
             }
 
 
-            // Seed Customer User
+            // Seed Client User
             if (userManager.Users.All(u => u.UserName != "client@enterprise.com"))
             {
                 var client = new Customer
@@ -171,7 +171,7 @@ namespace EnterpriseManagementApp
                 var result = await userManager.CreateAsync(client, "Client@123");
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(client, "Customer");
+                    await userManager.AddToRoleAsync(client, "Client");
                     Console.WriteLine("Customer user created successfully.");
                 }
                 else
@@ -200,7 +200,7 @@ namespace EnterpriseManagementApp
                 var result = await userManager.CreateAsync(client, "Client@123");
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(client, "Customer");
+                    await userManager.AddToRoleAsync(client, "Client");
                     Console.WriteLine("Customer user created successfully.");
                 }
                 else

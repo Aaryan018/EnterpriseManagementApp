@@ -23,11 +23,11 @@
                     <a class="btn btn-secondary" href="@Url.Action("Index", "Customers")"><i class="fas fa-users"></i> View Renters</a>
                     <a class="btn btn-warning" href="@Url.Action("Index", "Requests")"><i class="fas fa-check-circle"></i>Leave Requests</a>
                     <a class="btn btn-info" href="@Url.Action("Index", "RentChange")"><i class="fas fa-dollar-sign"></i> Rent Changes</a>
-                    <a class="btn btn-success" href="@Url.Action("Index", "OccupancyHistories")"><i class="fas fa-history"></i> Occupancy History</a>
+                    <a class="btn btn-success" href="@Url.Action("Index", "OccupancyHistories")"><i class="fas fa-history"></i> Asset Approval </a>
                 </div>
             </section>
         }
-        else if (User.IsInRole("Customer"))
+        else if (User.IsInRole("Client"))
         {
             <section class="dashboard-card client-card">
                 <h2 class="card-title">Welcome, Client!</h2>

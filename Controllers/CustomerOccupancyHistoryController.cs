@@ -13,7 +13,7 @@ using System.Diagnostics;
 
 namespace EnterpriseManagementApp.Controllers
 {
-    [Authorize(Roles = "Customer")]
+    [Authorize(Roles = "Client")]
     public class CustomerOccupancyHistoryController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -108,7 +108,7 @@ namespace EnterpriseManagementApp.Controllers
         public IActionResult Create()
         {
             // Check if the user is in the Customer role
-            if (User.IsInRole("Customer"))
+            if (User.IsInRole("Client"))
             {
                 // Set the CustomerId to the logged-in user's CustomerId
                 var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);

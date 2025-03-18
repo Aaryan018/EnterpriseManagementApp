@@ -56,7 +56,7 @@ namespace EnterpriseManagementApp.Controllers
                 var roles = await _userManager.GetRolesAsync(user);
                 Console.WriteLine($"User {user.Email} logged in with roles: {string.Join(", ", roles)}");
 
-                if (roles.Contains("Manager") || roles.Contains("Customer"))
+                if (roles.Contains("Manager") || roles.Contains("Client"))
                 {
                     // Redirect both Manager and Client to Home/Index
                     Console.WriteLine("Redirecting to Home/Index for Manager or Client");
@@ -97,15 +97,36 @@ namespace EnterpriseManagementApp.Controllers
                 return Json(new { success = false, message = "Validation failed 1.", errors });
             }
 
-            var user = new ApplicationUser
+            var user = new ApplicationUser();
+
+            if (model.Role == "Client")
             {
-                UserName = model.Email,
-                Email = model.Email,
-                FullName = model.FullName,
-                Address = model.Address,
-                PhoneNumber = model.PhoneNumber,
-                EmergencyContact = model.EmergencyContact
-            };
+                user = new Customer
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FullName = model.FullName,
+                    Address = model.Address,
+                    PhoneNumber = model.PhoneNumber,
+                    EmergencyContact = model.EmergencyContact,
+                    FamilyDoctor = model.FamilyDoctor,
+                    Role = model.Role
+                };
+            } else
+            {
+                user = new Employee
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FullName = model.FullName,
+                    Address = model.Address,
+                    PhoneNumber = model.PhoneNumber,
+                    EmergencyContact = model.EmergencyContact,
+                    Role = model.Role
+                };
+            }
+
+
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
@@ -130,7 +151,7 @@ namespace EnterpriseManagementApp.Controllers
                 else if (model.Role == "Client")
                 {
                     Console.WriteLine("Redirecting to Renters/Index for Client");
-                    return RedirectToAction("Index", "Renters"); // Updated for Client
+                    return RedirectToAction("Index", "Home"); // Updated for Client
                 }
 
                 Console.WriteLine("No specific role matched, redirecting to SignIn.");

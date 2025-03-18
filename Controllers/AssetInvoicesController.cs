@@ -15,7 +15,7 @@ using NuGet.ContentModel;
 
 namespace EnterpriseManagementApp.Controllers
 {
-    [Authorize(Roles = "Customer")]
+    [Authorize(Roles = "Client")]
     public class AssetInvoicesController : Controller
     {
         private readonly ApplicationDbContext _context;
