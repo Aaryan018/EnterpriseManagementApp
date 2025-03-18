@@ -1,65 +1,360 @@
-﻿@model IEnumerable<EnterpriseManagementApp.Models.Customer>
+﻿@model IEnumerable<EnterpriseManagementApp.Models.ApplicationUser>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Customer Dashboard";
 }
 
-<h1>Index</h1>
+<div class="dashboard-wrapper">
+    <header class="dashboard-header">
+        <h1 class="dashboard-title">@ViewData["Title"]</h1>
+        <p class="dashboard-subtitle">@(User.IsInRole("Manager") ? "Manage all renters and their details" : "Manage your rentals, requests, and more")</p>
+    </header>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FullName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PhoneNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmergencyContact)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FamilyDoctor)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhoneNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmergencyContact)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FamilyDoctor)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+    <main class="dashboard-container">
+        <section class="dashboard-card @(User.IsInRole("Manager") ? "manager-card" : "customer-card")">
+            <h2 class="card-title">@(User.IsInRole("Manager") ? "Renters Overview" : "Welcome, Customer!")</h2>
+            <p class="card-description">@(User.IsInRole("Manager") ? "View and manage all renters below." : "Access your rental details and manage your requests below.")</p>
+
+            @if (User.IsInRole("Manager"))
+            {
+                <!-- Manager View: List of all Customers -->
+                <div class="card-actions">
+                    <a class="btn btn-primary" href="@Url.Action("Create", "Customers")"><i class="fas fa-plus"></i> Add New Renter</a>
+                </div>
+
+                @if (Model.Any())
+                {
+                    <table class="customer-table">
+                        <thead>
+                            <tr>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var customer in Model)
+                            {
+                                <tr>
+                                    <td>@customer.FullName</td>
+                                    <td>@customer.Email</td>
+                                    <td>@customer.PhoneNumber</td>
+                                    <td>
+                                        <a href="@Url.Action("Details", "Customers", new { id = customer.Id })" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Details</a>
+                                        <a href="@Url.Action("Edit", "Customers", new { id = customer.Id })" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</a>
+                                        <a href="@Url.Action("Delete", "Customers", new { id = customer.Id })" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="no-data">No customers found.</p>
+                }
+            }
+            else if (User.IsInRole("Customer"))
+            {
+                <!-- Customer View: User Details and Action Cards -->
+                @if (Model.Any())
+                {
+                    var user = Model.First();
+                    <div class="user-details">
+                        <h3>Hello, @user.FullName!</h3>
+                        <p><strong>Email:</strong> @user.Email</p>
+                        <p><strong>Address:</strong> @user.Address</p>
+                        <p><strong>Phone:</strong> @user.PhoneNumber</p>
+                        <p><strong>Emergency Contact:</strong> @user.EmergencyContact</p>
+                    </div>
+                }
+                else
+                {
+                    <p class="no-data">No rental data available at this time. Please contact support to set up your account.</p>
+                }
+
+                <!-- Action Cards -->
+                <div class="card-actions">
+                    <div class="action-cards">
+                        <a href="@Url.Action("Index", "RentChanges")" class="action-card rent-change-card">
+                            <i class="fas fa-dollar-sign"></i>
+                            <h3>Request Rent Change</h3>
+                            <p>Adjust your rental amount with ease.</p>
+                        </a>
+                        <a href="@Url.Action("Create", "AssetRequest")" class="action-card asset-request-card">
+                            <i class="fas fa-building"></i>
+                            <h3>Request Asset</h3>
+                            <p>Request new assets for your needs.</p>
+                        </a>
+                        <a href="@Url.Action("Create", "LeaveRequest")" class="action-card leave-request-card">
+                            <i class="fas fa-check-circle"></i>
+                            <h3>Request Leave</h3>
+                            <p>Submit a leave request quickly.</p>
+                        </a>
+                        <a href="@Url.Action("Create", "OccupancyHistory")" class="action-card occupancy-history-card">
+                            <i class="fas fa-check-circle"></i>
+                            <h3>Occupancy History</h3>
+                            <p>Check your Occupancy History quickly.</p>
+                        </a>
+                    </div>
+                </div>
+            }
+        </section>
+    </main>
+</div>
+
+<style>
+    /* Base Styles */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .dashboard-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .dashboard-header {
+        text-align: center;
+        margin-bottom: 40px;
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    .dashboard-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1a237e;
+    }
+
+    .dashboard-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+    }
+
+    .dashboard-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .dashboard-card {
+        background: linear-gradient(135deg, #ffffff, #f5f7fa);
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        width: 100%;
+        max-width: 1000px;
+    }
+
+    .manager-card {
+        border-left: 5px solid #1976d2;
+    }
+
+    .customer-card {
+        border-left: 5px solid #4caf50;
+    }
+
+    .card-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .card-description {
+        font-size: 1.1rem;
+        color: #777;
+        margin-bottom: 20px;
+    }
+
+    .no-data {
+        text-align: center;
+        color: #777;
+        font-size: 1rem;
+        margin-top: 20px;
+    }
+
+    /* User Details Styles */
+    .user-details {
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+        .user-details h3 {
+            font-size: 1.5rem;
+            color: #1a237e;
+            margin-bottom: 10px;
+        }
+
+        .user-details p {
+            font-size: 1rem;
+            color: #333;
+            margin: 5px 0;
+        }
+
+    /* Table Styles for Manager View */
+    .customer-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+        .customer-table th, .customer-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .customer-table th {
+            background: #1976d2;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .customer-table tr:hover {
+            background: #f5f7fa;
+        }
+
+        .customer-table .btn {
+            margin-right: 5px;
+        }
+
+    /* Action Cards Styles */
+    .card-actions {
+        margin-bottom: 30px;
+    }
+
+    .action-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .action-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 300px;
+        height: 200px;
+        background: linear-gradient(135deg, #ffffff, #e0e0e0);
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        text-decoration: none;
+        color: #333;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .action-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #ffffff, #d1c4e9);
+        }
+
+        .action-card i {
+            font-size: 2.5rem;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .action-card:hover i {
+            transform: rotate(360deg);
+        }
+
+        .action-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #1a237e;
+        }
+
+        .action-card p {
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+    /* Specific Card Colors */
+    .rent-change-card {
+        background: linear-gradient(135deg, #ffffff, #bbdefb);
+    }
+
+        .rent-change-card:hover {
+            background: linear-gradient(135deg, #ffffff, #90caf9);
+        }
+
+    .asset-request-card {
+        background: linear-gradient(135deg, #ffffff, #c8e6c9);
+    }
+
+        .asset-request-card:hover {
+            background: linear-gradient(135deg, #ffffff, #a5d6a7);
+        }
+
+    .leave-request-card {
+        background: linear-gradient(135deg, #ffffff, #fff9c4);
+    }
+
+        .leave-request-card:hover {
+            background: linear-gradient(135deg, #ffffff, #fff59d);
+        }
+
+    /* Animation */
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-title
+
+    {
+        font-size: 2rem;
+    }
+
+    .dashboard-card {
+        padding: 20px;
+    }
+
+    .action-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .action-card {
+        width: 100%;
+        height: 180px;
+    }
+
+    .customer-table th, .customer-table td {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    }
+</style>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script>
 }
-    </tbody>
-</table>

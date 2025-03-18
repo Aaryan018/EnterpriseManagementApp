@@ -1,165 +1,135 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using EnterpriseManagementApp.Models;
+using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using EnterpriseManagementApp;
-using EnterpriseManagementApp.Models;
 
 namespace EnterpriseManagementApp.Controllers
 {
+    [Authorize(Roles = "Customer")]
     public class RentChangesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public RentChangesController(ApplicationDbContext context)
+        public RentChangesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // GET: RentChanges
+        // GET: RentChanges/Index (Show only the current customer's requests)
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.RentChanges.Include(r => r.Asset);
-            return View(await applicationDbContext.ToListAsync());
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User ID not found.");
+            }
+
+            var rentChanges = await _context.RentChanges
+                .Where(rc => rc.UserId == userId)
+                .Include(rc => rc.Asset)
+                .ToListAsync();
+
+            return View(rentChanges);
         }
 
-        // GET: RentChanges/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        // GET: RentChanges/Details/{id}
+        public async Task<IActionResult> Details(Guid id)
         {
-            if (id == null)
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
             {
-                return NotFound();
+                return Unauthorized("User ID not found.");
             }
 
             var rentChange = await _context.RentChanges
-                .Include(r => r.Asset)
-                .FirstOrDefaultAsync(m => m.RentChangeId == id);
+                .Include(rc => rc.Asset)
+                .FirstOrDefaultAsync(rc => rc.RentChangeId == id && rc.UserId == userId);
+
             if (rentChange == null)
             {
-                return NotFound();
+                return NotFound("Rent change request not found or you do not have access to it.");
             }
 
             return View(rentChange);
         }
 
-        // GET: RentChanges/Create
         public IActionResult Create()
         {
-            ViewData["AssetId"] = new SelectList(_context.Assets, "AssetId", "Address");
-            return View();
+            var assets = _context.Assets.Where(a => a.Status).ToList();
+            if (!assets.Any())
+            {
+                ModelState.AddModelError("", "No approved assets available to select. Please contact an administrator.");
+            }
+
+            ViewData["AssetId"] = new SelectList(assets, "AssetId", "Address");
+            return View(new RentChange());
         }
 
-        // POST: RentChanges/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RentChangeId,AssetId,ChangeDate,OldRate")] RentChange rentChange)
+        public async Task<IActionResult> Create([Bind("RentChangeId,AssetId,ChangeDate,OldRate,NewRate,Reason,UserId")] RentChange rentChange)
         {
-            if (ModelState.IsValid)
-            {
-                rentChange.RentChangeId = Guid.NewGuid();
-                _context.Add(rentChange);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["AssetId"] = new SelectList(_context.Assets, "AssetId", "Address", rentChange.AssetId);
-            return View(rentChange);
-        }
+            ModelState.Remove("User");
+            ModelState.Remove("Asset");
 
-        // GET: RentChanges/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
+            // Validate form
+            if (!ModelState.IsValid)
             {
-                return NotFound();
-            }
-
-            var rentChange = await _context.RentChanges.FindAsync(id);
-            if (rentChange == null)
-            {
-                return NotFound();
-            }
-            ViewData["AssetId"] = new SelectList(_context.Assets, "AssetId", "Address", rentChange.AssetId);
-            return View(rentChange);
-        }
-
-        // POST: RentChanges/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("RentChangeId,AssetId,ChangeDate,OldRate")] RentChange rentChange)
-        {
-            if (id != rentChange.RentChangeId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                foreach (var state in ModelState)
                 {
-                    _context.Update(rentChange);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!RentChangeExists(rentChange.RentChangeId))
+                    foreach (var error in state.Value.Errors)
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                        Console.WriteLine($"Validation Error for {state.Key}: {error.ErrorMessage}");
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                ViewData["AssetId"] = new SelectList(_context.Assets.ToList(), "AssetId", "Address", rentChange.AssetId);
+                return View(rentChange);
             }
-            ViewData["AssetId"] = new SelectList(_context.Assets, "AssetId", "Address", rentChange.AssetId);
-            return View(rentChange);
-        }
 
-        // GET: RentChanges/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null)
+            // Ensure UserId is correctly assigned and exists
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
             {
-                return NotFound();
+                ModelState.AddModelError("", "Unable to identify the current user.");
+                ViewData["AssetId"] = new SelectList(_context.Assets.ToList(), "AssetId", "Address", rentChange.AssetId);
+                return View(rentChange);
             }
 
-            var rentChange = await _context.RentChanges
-                .Include(r => r.Asset)
-                .FirstOrDefaultAsync(m => m.RentChangeId == id);
-            if (rentChange == null)
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                return NotFound();
+                ModelState.AddModelError("", "User not found in the system.");
+                ViewData["AssetId"] = new SelectList(_context.Assets.ToList(), "AssetId", "Address", rentChange.AssetId);
+                return View(rentChange);
             }
+            rentChange.UserId = userId;
 
-            return View(rentChange);
-        }
-
-        // POST: RentChanges/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var rentChange = await _context.RentChanges.FindAsync(id);
-            if (rentChange != null)
+            // Validate asset exists
+            var assetExists = await _context.Assets.AnyAsync(a => a.AssetId == rentChange.AssetId);
+            if (!assetExists || rentChange.AssetId == Guid.Empty)
             {
-                _context.RentChanges.Remove(rentChange);
+                ModelState.AddModelError("AssetId", "The selected asset is invalid or no longer exists.");
+                ViewData["AssetId"] = new SelectList(_context.Assets.ToList(), "AssetId", "Address", rentChange.AssetId);
+                return View(rentChange);
             }
 
+            // Set additional properties and save
+            rentChange.RentChangeId = Guid.NewGuid();
+            rentChange.Status = "Pending";
+            rentChange.SubmittedDate = DateTime.Now;
+
+            _context.Add(rentChange);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            Console.WriteLine($"Rent change saved with ID: {rentChange.RentChangeId}");
 
-        private bool RentChangeExists(Guid id)
-        {
-            return _context.RentChanges.Any(e => e.RentChangeId == id);
+            TempData["SuccessMessage"] = "Rent change request submitted successfully!";
+            return RedirectToAction("Index", "Customers");
         }
     }
 }
