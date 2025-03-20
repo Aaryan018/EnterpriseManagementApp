@@ -50,14 +50,14 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
     Console.WriteLine("Resetting database...");
-    await dbContext.Database.EnsureDeletedAsync();
-    await dbContext.Database.EnsureCreatedAsync();
+    // await dbContext.Database.EnsureDeletedAsync();  
+    // await dbContext.Database.EnsureCreatedAsync();
     Console.WriteLine("Database reset successfully.");
 
     // Seed data (add users, renters, assets) without recreating the database
     try
     {
-        await SeedData.Initialize(scope.ServiceProvider);
+        // await SeedData.Initialize(scope.ServiceProvider);
         Console.WriteLine("Seeding completed successfully.");
     }
     catch (Exception ex)
