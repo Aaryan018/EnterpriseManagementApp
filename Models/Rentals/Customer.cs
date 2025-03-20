@@ -9,7 +9,7 @@ namespace EnterpriseManagementApp.Models
         public ICollection<OccupancyHistory>? OccupancyHistories { get; set; }  // History of renting assets
 
         // Navigation property for the many-to-many relationship with customer
-        public ICollection<Event> Events { get; set; } = new List<Event>();
+        public ICollection<AppEvent> Events { get; set; } = new List<AppEvent>();
 
 
         // _______________ Own Table Attributes _______________

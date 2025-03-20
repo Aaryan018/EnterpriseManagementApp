@@ -1,4 +1,5 @@
-﻿namespace EnterpriseManagementApp;
+using Microsoft.EntityFrameworkCore;
+namespace EnterpriseManagementApp;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Microsoft.AspNetCore.Identity;
@@ -42,12 +43,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .ToTable("Customers");
 
         // Configure many-to-many relationship with a custom join table name
-        modelBuilder.Entity<Event>()
+        modelBuilder.Entity<AppEvent>()
             .HasMany(e => e.Customers)
             .WithMany(c => c.Events);
 
         // Example of linking Event -> Service
-        modelBuilder.Entity<Event>()
+        modelBuilder.Entity<AppEvent>()
             .HasOne(e => e.Service)
             .WithMany(s => s.Events)
             .HasForeignKey(e => e.ServiceId);
@@ -57,8 +58,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasOne(a => a.Event)
             .WithMany(e => e.Attendances)
             .HasForeignKey(a => a.EventId);
-
-
+        
 
         // Configuring the many-to-many relationship using the join table OccupancyHistory (Customer <->  Asset)
         modelBuilder.Entity<OccupancyHistory>()
@@ -85,4 +85,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         // invokes base class implementation of the 'OnModelCreating' method; 
         base.OnModelCreating(modelBuilder);
     }
+
+public DbSet<AppEvent> AppEvent { get; set; } = default!;
 }

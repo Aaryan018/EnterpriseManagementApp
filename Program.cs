@@ -58,15 +58,15 @@ using (var scope = app.Services.CreateScope())
 
 
     Console.WriteLine("Resetting database...");
-    await dbContext.Database.EnsureDeletedAsync();
-    await dbContext.Database.EnsureCreatedAsync();
+    // await dbContext.Database.EnsureDeletedAsync();  
+    // await dbContext.Database.EnsureCreatedAsync();
     Console.WriteLine("Database reset successfully.");
 
 
     // Seed data (add users, renters, assets)
     try
     {
-        await SeedData.Initialize(scope.ServiceProvider);
+        // await SeedData.Initialize(scope.ServiceProvider);
         Console.WriteLine("Seeding completed successfully.");
     }
     catch (Exception ex)
