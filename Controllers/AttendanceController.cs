@@ -85,7 +85,7 @@ namespace EnterpriseManagementApp.Controllers
                 .Select(e => new 
                 { 
                     Id = e.Id, 
-                    DisplayText = $"{e.Service.Name}: ({e.StartTime:MMM-dd-yyyy HH:mm} - {e.EndTime:HH:mm})"
+                    DisplayText = $"{e.Service.Name}: ({e.StartTime:MMM-dd-yyyy HH:mm} - {e.EndTime:HH:mm})",
                 })
                 .ToListAsync(); // ✅ Use ToListAsync() for async execution
 
@@ -101,6 +101,18 @@ namespace EnterpriseManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AttendanceId,EmployeeId,EventId,ClockedInTime,ClockedOutTime,DayType")] Attendance attendance)
         {
+            // ✅ Retrieve selected Employee and Event (including Service)
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == attendance.EmployeeId);
+            var appEvent = await _context.AppEvent
+                .Include(e => e.Service)
+                .FirstOrDefaultAsync(e => e.Id == attendance.EventId);
+
+            // ✅ Check for qualification mismatch
+            if (employee == null || appEvent == null || employee.Qualifications != appEvent.Service.Qualifications)
+            {
+                ModelState.AddModelError("", "Selected employee does not meet the qualification requirement for this service.");
+            }
+
             if (ModelState.IsValid)
             {
                 try
@@ -116,20 +128,18 @@ namespace EnterpriseManagementApp.Controllers
                 }
             }
 
-            // 🔹 Fix: Use the correct display properties for dropdowns
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "FullName", attendance.EmployeeId);
-
-            var events = _context.AppEvent
+            // 🔁 Repopulate dropdowns if validation fails
+            var events = await _context.AppEvent
                 .Include(e => e.Service)
                 .Select(e => new
                 {
                     Id = e.Id,
-                    DisplayText = $"{(e.Service != null ? e.Service.Name : "Unknown Service")}: " +
-                                  $"({e.StartTime:MMM-dd-yyyy HH:mm} - {e.EndTime:HH:mm})"
+                    DisplayText = $"{e.Service.Name}: ({e.StartTime:MMM-dd-yyyy HH:mm} - {e.EndTime:HH:mm})"
                 })
-                .ToList();
+                .ToListAsync();
 
             ViewData["EventId"] = new SelectList(events, "Id", "DisplayText", attendance.EventId);
+            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "FullName", attendance.EmployeeId);
 
             return View(attendance);
         }
@@ -147,8 +157,19 @@ namespace EnterpriseManagementApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Id", attendance.EmployeeId);
-            ViewData["EventId"] = new SelectList(_context.AppEvent, "Id", "Id", attendance.EventId);
+            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "FullName", attendance.EmployeeId);
+            
+            var events = _context.AppEvent
+                .Include(e => e.Service)
+                .Select(e => new
+                {
+                    Id = e.Id,
+                    DisplayText = $"{(e.Service != null ? e.Service.Name : "Unknown Service")}: " +
+                                  $"({e.StartTime:MMM-dd-yyyy HH:mm} - {e.EndTime:HH:mm})"
+                })
+                .ToList();
+            
+            ViewData["EventId"] = new SelectList(events, "Id", "DisplayText", attendance.EventId);
             return View(attendance);
         }
 
@@ -162,6 +183,17 @@ namespace EnterpriseManagementApp.Controllers
             if (id != attendance.AttendanceId)
             {
                 return NotFound();
+            }
+
+            // ✅ Retrieve selected Employee and Event (including Service)
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == attendance.EmployeeId);
+            var appEvent = await _context.AppEvent
+                .Include(e => e.Service)
+                .FirstOrDefaultAsync(e => e.Id == attendance.EventId);
+            
+            if (employee == null || appEvent == null || employee.Qualifications != appEvent.Service.Qualifications)
+            {
+                ModelState.AddModelError("", "Selected employee does not meet the qualification requirement for this service.");
             }
 
             if (ModelState.IsValid)
@@ -184,8 +216,19 @@ namespace EnterpriseManagementApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Id", attendance.EmployeeId);
-            ViewData["EventId"] = new SelectList(_context.AppEvent, "Id", "Id", attendance.EventId);
+            
+            var events = await _context.AppEvent
+                .Include(e => e.Service)
+                .Select(e => new
+                {
+                    Id = e.Id,
+                    DisplayText = $"{e.Service.Name}: ({e.StartTime:MMM-dd-yyyy HH:mm} - {e.EndTime:HH:mm})"
+                })
+                .ToListAsync();
+
+            ViewData["EventId"] = new SelectList(events, "Id", "DisplayText", attendance.EventId);
+            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "FullName", attendance.EmployeeId);
+
             return View(attendance);
         }
 
@@ -227,6 +270,48 @@ namespace EnterpriseManagementApp.Controllers
         private bool AttendanceExists(int id)
         {
             return _context.Attendances.Any(e => e.AttendanceId == id);
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ClockIn(int id)
+        {
+            var attendance = await _context.Attendances.FindAsync(id);
+
+            if (attendance == null)
+            {
+                return NotFound();
+            }
+
+            if (attendance.ClockedInTime == null)
+            {
+                attendance.ClockedInTime = DateTime.Now;
+                _context.Update(attendance);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Details), new { id = attendance.AttendanceId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ClockOut(int id)
+        {
+            var attendance = await _context.Attendances.FindAsync(id);
+
+            if (attendance == null)
+            {
+                return NotFound();
+            }
+
+            if (attendance.ClockedInTime != null && attendance.ClockedOutTime == null)
+            {
+                attendance.ClockedOutTime = DateTime.Now; 
+                _context.Update(attendance);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Details), new { id = attendance.AttendanceId });
         }
     }
 }

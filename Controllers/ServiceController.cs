@@ -23,6 +23,7 @@ namespace EnterpriseManagementApp.Controllers
         {
             var userName = User?.Identity?.Name;
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            Console.WriteLine("User Role " + user?.Role);
             ViewData["UserRole"] = user?.Role;
             return View(await _context.Services.ToListAsync());
         }
@@ -46,7 +47,6 @@ namespace EnterpriseManagementApp.Controllers
         }
 
         // GET: Service/Create
-// GET: AppEvent/Create
         public async Task<IActionResult> Create()
         {
             var userName = User?.Identity?.Name;
