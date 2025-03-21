@@ -55,6 +55,21 @@ namespace EnterpriseManagementApp.Migrations
                     b.ToTable("Attendances");
                 });
 
+            modelBuilder.Entity("CustomerEvent", b =>
+                {
+                    b.Property<string>("CustomersId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("EventsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CustomersId", "EventsId");
+
+                    b.HasIndex("EventsId");
+
+                    b.ToTable("CustomerEvent");
+                });
+
             modelBuilder.Entity("EnterpriseManagementApp.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -183,6 +198,40 @@ namespace EnterpriseManagementApp.Migrations
                     b.ToTable("Assets");
                 });
 
+            modelBuilder.Entity("EnterpriseManagementApp.Models.LeaveRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("ApprovalStatus")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Paid")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("LeaveRequests");
+                });
+
             modelBuilder.Entity("EnterpriseManagementApp.Models.OccupancyHistory", b =>
                 {
                     b.Property<string>("CustomerId")
@@ -228,23 +277,47 @@ namespace EnterpriseManagementApp.Migrations
                     b.Property<DateTime>("ChangeDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<double>("NewRate")
+                        .HasColumnType("float");
+
                     b.Property<double>("OldRate")
                         .HasColumnType("float");
+
+                    b.Property<DateTime?>("ProcessedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("SubmittedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("RentChangeId");
 
                     b.HasIndex("AssetId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("RentChanges");
                 });
 
             modelBuilder.Entity("Event", b =>
                 {
-                    b.Property<int>("EventId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
@@ -258,45 +331,11 @@ namespace EnterpriseManagementApp.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.HasKey("EventId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ServiceId");
 
                     b.ToTable("Event");
-                });
-
-            modelBuilder.Entity("LeaveRequest", b =>
-                {
-                    b.Property<int>("LeaveRequestId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LeaveRequestId"));
-
-                    b.Property<bool>("ApprovalStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("EmployeeId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Paid")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("LeaveRequestId");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("LeaveRequests");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -434,11 +473,11 @@ namespace EnterpriseManagementApp.Migrations
 
             modelBuilder.Entity("Payroll", b =>
                 {
-                    b.Property<int>("PayrollId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PayrollId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("EmployeeId")
                         .IsRequired()
@@ -462,7 +501,7 @@ namespace EnterpriseManagementApp.Migrations
                     b.Property<double>("TotalPay")
                         .HasColumnType("float");
 
-                    b.HasKey("PayrollId");
+                    b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
 
@@ -471,11 +510,11 @@ namespace EnterpriseManagementApp.Migrations
 
             modelBuilder.Entity("Service", b =>
                 {
-                    b.Property<int>("ServiceId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ServiceId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -495,7 +534,7 @@ namespace EnterpriseManagementApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ServiceId");
+                    b.HasKey("Id");
 
                     b.ToTable("Services");
                 });
@@ -504,22 +543,17 @@ namespace EnterpriseManagementApp.Migrations
                 {
                     b.HasBaseType("EnterpriseManagementApp.Models.ApplicationUser");
 
-                    b.Property<double>("HourlyRate")
+                    b.Property<double?>("HourlyRate")
                         .HasColumnType("float");
 
                     b.Property<string>("JobTitle")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Qualifications")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Type")
+                    b.Property<int?>("Type")
                         .HasColumnType("int");
-
-                    b.Property<bool>("isManager")
-                        .HasColumnType("bit");
 
                     b.ToTable("Employees", (string)null);
                 });
@@ -554,6 +588,32 @@ namespace EnterpriseManagementApp.Migrations
                     b.Navigation("Event");
                 });
 
+            modelBuilder.Entity("CustomerEvent", b =>
+                {
+                    b.HasOne("EnterpriseManagementApp.Models.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("CustomersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Event", null)
+                        .WithMany()
+                        .HasForeignKey("EventsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EnterpriseManagementApp.Models.LeaveRequest", b =>
+                {
+                    b.HasOne("Employee", "Employee")
+                        .WithMany("LeaveRequests")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("EnterpriseManagementApp.Models.OccupancyHistory", b =>
                 {
                     b.HasOne("EnterpriseManagementApp.Models.Asset", "Asset")
@@ -578,10 +638,18 @@ namespace EnterpriseManagementApp.Migrations
                     b.HasOne("EnterpriseManagementApp.Models.Asset", "Asset")
                         .WithMany("RentChanges")
                         .HasForeignKey("AssetId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("EnterpriseManagementApp.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Asset");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Event", b =>
@@ -593,17 +661,6 @@ namespace EnterpriseManagementApp.Migrations
                         .IsRequired();
 
                     b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("LeaveRequest", b =>
-                {
-                    b.HasOne("Employee", "Employee")
-                        .WithMany("LeaveRequests")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EnterpriseManagementApp.Migrations
 {
     /// <inheritdoc />
-    public partial class initialcreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,8 +36,6 @@ namespace EnterpriseManagementApp.Migrations
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     EmergencyContact = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Discriminator = table.Column<string>(type: "nvarchar(21)", maxLength: 21, nullable: false),
-                    FamilyDoctor = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -79,7 +77,7 @@ namespace EnterpriseManagementApp.Migrations
                 name: "Services",
                 columns: table => new
                 {
-                    ServiceId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -89,7 +87,7 @@ namespace EnterpriseManagementApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Services", x => x.ServiceId);
+                    table.PrimaryKey("PK_Services", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -199,27 +197,94 @@ namespace EnterpriseManagementApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Employees",
+                name: "Customers",
                 columns: table => new
                 {
-                    EmployeeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    JobTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    HourlyRate = table.Column<double>(type: "float", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    isManager = table.Column<bool>(type: "bit", nullable: false),
-                    Qualifications = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FamilyDoctor = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Employees", x => x.EmployeeId);
+                    table.PrimaryKey("PK_Customers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Employees_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
+                        name: "FK_Customers_AspNetUsers_Id",
+                        column: x => x.Id,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Employees",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    JobTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HourlyRate = table.Column<double>(type: "float", nullable: true),
+                    Type = table.Column<int>(type: "int", nullable: true),
+                    Qualifications = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employees", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Employees_AspNetUsers_Id",
+                        column: x => x.Id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RentChanges",
+                columns: table => new
+                {
+                    RentChangeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AssetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ChangeDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OldRate = table.Column<double>(type: "float", nullable: false),
+                    NewRate = table.Column<double>(type: "float", nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SubmittedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProcessedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RentChanges", x => x.RentChangeId);
+                    table.ForeignKey(
+                        name: "FK_RentChanges_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_RentChanges_Assets_AssetId",
+                        column: x => x.AssetId,
+                        principalTable: "Assets",
+                        principalColumn: "AssetId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Event",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ServiceId = table.Column<int>(type: "int", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Event", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Event_Services_ServiceId",
+                        column: x => x.ServiceId,
+                        principalTable: "Services",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -239,57 +304,15 @@ namespace EnterpriseManagementApp.Migrations
                 {
                     table.PrimaryKey("PK_OccupancyHistories", x => new { x.CustomerId, x.AssetId });
                     table.ForeignKey(
-                        name: "FK_OccupancyHistories_AspNetUsers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_OccupancyHistories_Assets_AssetId",
                         column: x => x.AssetId,
                         principalTable: "Assets",
                         principalColumn: "AssetId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RentChanges",
-                columns: table => new
-                {
-                    RentChangeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AssetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ChangeDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OldRate = table.Column<double>(type: "float", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RentChanges", x => x.RentChangeId);
                     table.ForeignKey(
-                        name: "FK_RentChanges_Assets_AssetId",
-                        column: x => x.AssetId,
-                        principalTable: "Assets",
-                        principalColumn: "AssetId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Event",
-                columns: table => new
-                {
-                    EventId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ServiceId = table.Column<int>(type: "int", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Event", x => x.EventId);
-                    table.ForeignKey(
-                        name: "FK_Event_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "ServiceId",
+                        name: "FK_OccupancyHistories_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -297,9 +320,9 @@ namespace EnterpriseManagementApp.Migrations
                 name: "LeaveRequests",
                 columns: table => new
                 {
-                    LeaveRequestId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
@@ -308,12 +331,12 @@ namespace EnterpriseManagementApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LeaveRequests", x => x.LeaveRequestId);
+                    table.PrimaryKey("PK_LeaveRequests", x => x.Id);
                     table.ForeignKey(
                         name: "FK_LeaveRequests_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -321,9 +344,9 @@ namespace EnterpriseManagementApp.Migrations
                 name: "Payrolls",
                 columns: table => new
                 {
-                    PayrollId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     MonthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TotalPay = table.Column<double>(type: "float", nullable: false),
                     RegularHours = table.Column<double>(type: "float", nullable: false),
@@ -333,12 +356,12 @@ namespace EnterpriseManagementApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Payrolls", x => x.PayrollId);
+                    table.PrimaryKey("PK_Payrolls", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Payrolls_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -348,7 +371,7 @@ namespace EnterpriseManagementApp.Migrations
                 {
                     AttendanceId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EventId = table.Column<int>(type: "int", nullable: false),
                     ClockedInTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ClockedOutTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -361,13 +384,37 @@ namespace EnterpriseManagementApp.Migrations
                         name: "FK_Attendances_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Attendances_Event_EventId",
                         column: x => x.EventId,
                         principalTable: "Event",
-                        principalColumn: "EventId",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CustomerEvent",
+                columns: table => new
+                {
+                    CustomersId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EventsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomerEvent", x => new { x.CustomersId, x.EventsId });
+                    table.ForeignKey(
+                        name: "FK_CustomerEvent_Customers_CustomersId",
+                        column: x => x.CustomersId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CustomerEvent_Event_EventsId",
+                        column: x => x.EventsId,
+                        principalTable: "Event",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -421,11 +468,9 @@ namespace EnterpriseManagementApp.Migrations
                 column: "EventId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Employees_ApplicationUserId",
-                table: "Employees",
-                column: "ApplicationUserId",
-                unique: true,
-                filter: "[ApplicationUserId] IS NOT NULL");
+                name: "IX_CustomerEvent_EventsId",
+                table: "CustomerEvent",
+                column: "EventsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Event_ServiceId",
@@ -451,6 +496,11 @@ namespace EnterpriseManagementApp.Migrations
                 name: "IX_RentChanges_AssetId",
                 table: "RentChanges",
                 column: "AssetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RentChanges_UserId",
+                table: "RentChanges",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -475,6 +525,9 @@ namespace EnterpriseManagementApp.Migrations
                 name: "Attendances");
 
             migrationBuilder.DropTable(
+                name: "CustomerEvent");
+
+            migrationBuilder.DropTable(
                 name: "LeaveRequests");
 
             migrationBuilder.DropTable(
@@ -491,6 +544,9 @@ namespace EnterpriseManagementApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "Event");
+
+            migrationBuilder.DropTable(
+                name: "Customers");
 
             migrationBuilder.DropTable(
                 name: "Employees");

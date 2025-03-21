@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using EnterpriseManagementApp.Models;
 using System.Threading.Tasks;
-//using EnterpriseManagementApp.Models.Authentication;
 using System.Linq;
 using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -27,19 +26,24 @@ namespace EnterpriseManagementApp.Controllers
             _roleManager = roleManager;
         }
 
+        // GET: /Account/SignIn
         public IActionResult SignIn()
         {
             return View();
         }
 
+        // POST: /Account/SignIn
         [HttpPost]
         public async Task<IActionResult> SignIn(SignIn model)
         {
+            Console.WriteLine("SignIn POST action hit.");
+
             if (!ModelState.IsValid)
             {
                 Console.WriteLine("Model state is invalid.");
                 return View(model);
             }
+
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
@@ -49,21 +53,24 @@ namespace EnterpriseManagementApp.Controllers
                 return View(model);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
-
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                var roles = await _userManager.GetRolesAsync(user);
-                Console.WriteLine($"User {user.Email} logged in with roles: {string.Join(", ", roles)}");
+                var userRoles = await _userManager.GetRolesAsync(user);
+                Console.WriteLine($"User {user.Email} logged in with roles: {string.Join(", ", userRoles)}");
 
-                if (roles.Contains("Manager") || roles.Contains("Client") || roles.Contains("Employee"))
+                if (userRoles.Contains("Manager"))
                 {
-                    // Redirect both Manager and Client to Home/Index
-                    Console.WriteLine("Redirecting to Home/Index for Manager or Client");
+                    Console.WriteLine("Redirecting to Home/Index for Manager");
                     return RedirectToAction("Index", "Home");
                 }
+                else if (userRoles.Contains("Customer")) // Updated to "Customer"
+                {
+                    Console.WriteLine("Redirecting to Customers/Index for Customer");
+                    return RedirectToAction("Index", "Customers");
+                }
 
-                Console.WriteLine("No specific role matched, redirect somewhere ...");
+                Console.WriteLine("No specific role matched, redirecting to Home/Index.");
                 return RedirectToAction("Index", "Home");
             }
 
@@ -72,12 +79,13 @@ namespace EnterpriseManagementApp.Controllers
             return View(model);
         }
 
-
+        // GET: /Account/SignUp
         public IActionResult SignUp()
         {
             return View();
         }
 
+        // POST: /Account/SignUp
         [HttpPost]
         public async Task<IActionResult> SignUp(SignUp model)
         {
@@ -89,17 +97,20 @@ namespace EnterpriseManagementApp.Controllers
                     Console.WriteLine("Validation Error: " + error.ErrorMessage);
                 }
 
-                var errors = ModelState
-                    .Where(x => x.Value.Errors.Count > 0)
-                    .Select(x => new { field = x.Key, errors = x.Value.Errors.Select(e => e.ErrorMessage) })
-                    .ToList();
-
-                return Json(new { success = false, message = "Validation failed 1.", errors });
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    var errors = ModelState
+                        .Where(x => x.Value.Errors.Count > 0)
+                        .Select(x => new { field = x.Key, errors = x.Value.Errors.Select(e => e.ErrorMessage) })
+                        .ToList();
+                    return Json(new { success = false, message = "Validation failed.", errors });
+                }
+                return View(model);
             }
 
             var user = new ApplicationUser();
 
-            if (model.Role == "Client")
+            if (model.Role == "Customer")
             {
                 user = new Customer
                 {
@@ -129,7 +140,6 @@ namespace EnterpriseManagementApp.Controllers
 
 
             var result = await _userManager.CreateAsync(user, model.Password);
-
             if (result.Succeeded)
             {
                 if (!await _roleManager.RoleExistsAsync(model.Role))
@@ -146,47 +156,44 @@ namespace EnterpriseManagementApp.Controllers
                 if (model.Role == "Manager")
                 {
                     Console.WriteLine("Redirecting to Home/Index for Manager");
-                    return RedirectToAction("Index", "Home"); // Redirect Manager to Home/Index (Common Dashboard)
+                    return RedirectToAction("Index", "Home");
                 }
-                else if (model.Role == "Client")
+                else if (model.Role == "Customer") // Updated to "Customer"
                 {
-                    Console.WriteLine("Redirecting to Renters/Index for Client");
-                    return RedirectToAction("Index", "Home"); // Updated for Client
-                }
-                else if (model.Role == "Employee")
-                {
-                    Console.WriteLine("Redirecting to Renters/Index for Employee");
-                    return RedirectToAction("Index", "Home"); // Updated for Client
+                    Console.WriteLine("Redirecting to Customers/Index for Customer");
+                    return RedirectToAction("Index", "Customers");
                 }
 
                 Console.WriteLine("No specific role matched, redirecting to SignIn.");
                 return RedirectToAction("SignIn", "Account");
-            } else
-            {
-                // User creation failed, prepare error messages
-                var errorMessages = result.Errors.Select(error => error.Description).ToList();
+            }
 
-                // Return the errors as a JSON response
+            // Handle user creation failure
+            var errorMessages = result.Errors.Select(error => error.Description).ToList();
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
                 return Json(new { success = false, errors = errorMessages });
             }
+            foreach (var error in errorMessages)
+            {
+                ModelState.AddModelError(string.Empty, error);
+            }
+            return View(model);
         }
 
+        // POST: /Account/Logout
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            // Sign out the user from Identity
             await _signInManager.SignOutAsync();
-
-            // Explicitly sign out any authentication cookies
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             Console.WriteLine("User logged out successfully, redirecting to SignIn.");
-
-            // Redirect to the SignIn page after logout
             return RedirectToAction("SignIn", "Account");
         }
 
+        // GET: /Account/AccessDenied
         public IActionResult AccessDenied()
         {
             Console.WriteLine("Access denied page accessed.");

@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EnterpriseManagementApp;
 using EnterpriseManagementApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EnterpriseManagementApp.Controllers
 {
+
+    [Authorize(Roles = "Manager")]
     public class AssetsController : Controller
     {
         private readonly ApplicationDbContext _context;
