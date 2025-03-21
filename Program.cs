@@ -49,6 +49,11 @@ using (var scope = app.Services.CreateScope())
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
+    Console.WriteLine("Resetting database...");
+    await dbContext.Database.EnsureDeletedAsync();
+    await dbContext.Database.EnsureCreatedAsync();
+    Console.WriteLine("Database reset successfully.");
+
     // Seed data (add users, renters, assets) without recreating the database
     try
     {
