@@ -31,10 +31,7 @@
 
             <form asp-action="Create" method="post" id="rentChangeForm">
                 <!-- Hidden field for UserId -->
-                @{
-                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    <p>UserId: @userId</p>
-                }
+                
                 <input type="hidden" name="UserId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
 
                 <div class="form-group">

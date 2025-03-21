@@ -23,7 +23,7 @@
 
         /* Navbar */
         .navbar {
-            background: linear-gradient(135deg, #1976d2, #1565c0);
+            background: linear-gradient(135deg, #218a94, #19676e);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             padding: 15px 0;
             position: sticky;
@@ -170,12 +170,17 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="@Url.Action("Index", "Customers")">ManageHousing</a>
+            <a class="navbar-brand" href="@(User.IsInRole("Manager") ? Url.Action("Index", "Home") :
+        User.IsInRole("Customer") ? Url.Action("Index", "Customers") :
+        Url.Action("Index", "Home"))">ManageHousing</a>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
+
                     @if (User.IsInRole("Manager"))
                     {
                         <li class="nav-item">
@@ -190,18 +195,64 @@
                     }
                     else if (User.IsInRole("Customer"))
                     {
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "RentChanges")"><i class="fas fa-home"></i> My Rent Changes</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="rentChangesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-home"></i> Manage Rents
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="rentChangesDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Index", "RentChanges")">
+                                        <i class="fas fa-list"></i> View Rent Changes
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Create", "RentChanges")">
+                                        <i class="fas fa-edit"></i> Request Change
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Create", "RentChanges")"><i class="fas fa-edit"></i> Request Change</a>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="customerAssetsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-box"></i> Manage Assets
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="customerAssetsDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Index", "Assets")">
+                                        <i class="fas fa-list"></i> View Assets
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Create", "Assets")">
+                                        <i class="fas fa-edit"></i> Request Asset
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="customerLeavesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-calendar-alt"></i> Manage Leaves
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="customerLeavesDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Index", "Requests")">
+                                        <i class="fas fa-list"></i> View Leaves
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Create", "Requests")">
+                                        <i class="fas fa-edit"></i> Request Leave
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     }
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Index", "Customers")"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                    </li>
+
                 </ul>
 
+                <!-- Authentication Section -->
                 @if (User.Identity.IsAuthenticated)
                 {
                     <form action="@Url.Action("Logout", "Account")" method="post" class="logout-form">
@@ -218,6 +269,7 @@
             </div>
         </div>
     </nav>
+
 
     <div class="container">
         @RenderBody()

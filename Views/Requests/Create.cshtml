@@ -1,0 +1,55 @@
+﻿@model EnterpriseManagementApp.Models.LeaveRequest
+@using EnterpriseManagementApp.Enums
+
+@{
+    ViewData["Title"] = "Request Leave";
+}
+
+<h1>Request Leave</h1>
+<h4>Leave Request Form</h4>
+<hr />
+
+@using (Html.BeginForm("Create", "Requests", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="text-danger">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    </div>
+
+    @Html.HiddenFor(model => model.EmployeeId) <!-- Ensuring EmployeeId is passed -->
+
+    <div class="form-group">
+        <label>Employee Name</label>
+        <input type="text" class="form-control" value="@User.Identity.Name" readonly />
+    </div>
+
+    <div class="form-group">
+        <label>Employee Email</label>
+        <input type="email" class="form-control" value="@User.Identity.Name" readonly />
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Type)
+        @Html.DropDownListFor(model => model.Type, Enum.GetValues(typeof(LeaveType)).Cast<LeaveType>().Select(e => new SelectListItem { Text = e.ToString(), Value = e.ToString() }), "--Select Leave Type--", new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.StartDate)
+        @Html.TextBoxFor(model => model.StartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+        @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.EndDate)
+        @Html.TextBoxFor(model => model.EndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+        @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit Request</button>
+    </div>
+}
+
+<a href="@Url.Action("Index", "Requests")">Back to List</a>
