@@ -36,11 +36,14 @@ namespace EnterpriseManagementApp.Controllers
         [HttpPost]
         public async Task<IActionResult> SignIn(SignIn model)
         {
+            Console.WriteLine("SignIn POST action hit.");
+
             if (!ModelState.IsValid)
             {
                 Console.WriteLine("Model state is invalid.");
                 return View(model);
             }
+
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
