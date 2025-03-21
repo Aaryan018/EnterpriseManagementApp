@@ -108,15 +108,36 @@ namespace EnterpriseManagementApp.Controllers
                 return View(model);
             }
 
-            var user = new ApplicationUser
+            var user = new ApplicationUser();
+
+            if (model.Role == "Customer")
             {
-                UserName = model.Email,
-                Email = model.Email,
-                FullName = model.FullName,
-                Address = model.Address,
-                PhoneNumber = model.PhoneNumber,
-                EmergencyContact = model.EmergencyContact
-            };
+                user = new Customer
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FullName = model.FullName,
+                    Address = model.Address,
+                    PhoneNumber = model.PhoneNumber,
+                    EmergencyContact = model.EmergencyContact,
+                    FamilyDoctor = model.FamilyDoctor,
+                    Role = model.Role
+                };
+            } else
+            {
+                user = new Employee
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FullName = model.FullName,
+                    Address = model.Address,
+                    PhoneNumber = model.PhoneNumber,
+                    EmergencyContact = model.EmergencyContact,
+                    Role = model.Role
+                };
+            }
+
+
 
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)

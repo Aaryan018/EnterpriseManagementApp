@@ -1,0 +1,167 @@
+﻿@model IEnumerable<EnterpriseManagementApp.Models.OccupancyHistory>
+
+@{
+    ViewData["Title"] = "My Assets";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Page Title -->
+<h1 class="page-title">My Assets</h1>
+
+<p class="request-asset-link">
+    <a asp-action="Create" class="btn request-asset-btn">Request Asset</a>
+</p>
+
+<!-- Table of Assets -->
+<table class="assets-table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Asset)</th>
+            <th>@Html.DisplayNameFor(model => model.Start)</th>
+            <th>@Html.DisplayNameFor(model => model.End)</th>
+            <th>@Html.DisplayNameFor(model => model.Paid)</th>
+            <th>@Html.DisplayNameFor(model => model.TotalDue)</th>
+            <th>@Html.DisplayNameFor(model => model.RemainingBalance)</th>
+            <th>@Html.DisplayNameFor(model => model.Status)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Asset.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Start)</td>
+                <td>@Html.DisplayFor(modelItem => item.End)</td>
+                <td>@Html.DisplayFor(modelItem => item.Paid)</td>
+                <td>@Html.DisplayFor(modelItem => item.TotalDue)</td>
+                <td>@Html.DisplayFor(modelItem => item.RemainingBalance)</td>
+                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                <td>
+                    @* Display the "Pay" button only if the Status is "Approved" *@
+                    @if (item.Status == "Approved")
+                    {
+                        <a class="btn pay-btn" href="@Url.Action("Create", "AssetInvoices", new { occupancyHistoryId = item.OccupancyHistoryId })">
+                            <i class="fas fa-credit-card"></i> Pay
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Embedded CSS for left-aligned title and button, rectangular buttons, and rounded table corners -->
+<style>
+    /* General Body Styles */
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: #fff;
+        color: #333;
+        margin: 0;
+        padding: 30px;
+        box-sizing: border-box;
+    }
+
+    /* Page Title */
+    .page-title {
+        color: #333;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 40px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-align: left; /* Align title to the left */
+    }
+
+    /* Request Asset Button */
+    .request-asset-link {
+        margin-bottom: 30px;
+    }
+
+    .request-asset-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 12px 30px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 600;
+        box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+        transition: all 0.3s ease;
+        display: inline-block;
+        border: none;
+        cursor: pointer;
+        text-align: left; /* Align text inside the button to the left */
+    }
+
+        .request-asset-btn:hover {
+            background-color: #0056b3;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+            transform: scale(1.1); /* Enlarge the button by 10% */
+        }
+
+    /* Table Styles */
+    .assets-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 0 auto;
+        background-color: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+        .assets-table th,
+        .assets-table td {
+            padding: 18px;
+            text-align: left;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .assets-table th {
+            background-color: #007bff;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .assets-table td {
+            background-color: #fafafa;
+            color: #333;
+        }
+
+        .assets-table tr:nth-child(even) td {
+            background-color: #f8f9fa;
+        }
+
+        .assets-table tr:hover td {
+            background-color: #e9ecef;
+            cursor: pointer;
+        }
+
+    /* Button Styles (Pay Button) */
+    .pay-btn {
+        display: inline-block;
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2);
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+        .pay-btn:hover {
+            background-color: #218838;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+    /* Icon inside the "Pay" button */
+    .fas {
+        margin-right: 8px;
+    }
+</style>
