@@ -23,12 +23,6 @@
             @Html.DisplayFor(model => model.ClockedOutTime)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DayType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DayType)
-        </dd>
-        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Employee)
         </dt>
         <dd class = "col-sm-10">
@@ -42,6 +36,22 @@
         </dd>
     </dl>
 </div>
+
+<div>
+    @if (Model.ClockedInTime == null)
+    {
+        <form method="post" asp-action="ClockIn" asp-route-id="@Model.AttendanceId">
+            <button type="submit" class="btn btn-success">Clock In</button>
+        </form>
+    }
+    else if (Model.ClockedOutTime == null)
+    {
+        <form method="post" asp-action="ClockOut" asp-route-id="@Model.AttendanceId">
+            <button type="submit" class="btn btn-danger">Clock Out</button>
+        </form>
+    }
+</div>
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.AttendanceId">Edit</a> |
     <a asp-action="Index">Back to List</a>
