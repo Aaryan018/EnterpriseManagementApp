@@ -1,10 +1,15 @@
-﻿namespace EnterpriseManagementApp
-{
-    using System.Collections.Generic;
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore;
-    using EnterpriseManagementApp.Models;
+﻿namespace EnterpriseManagementApp;
+using System.Collections.Generic;
+using System.Reflection.Emit;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+
+using EnterpriseManagementApp.Models;
+//using Test2.Models.OldModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using EnterpriseManagementApp.Models.Rentals;
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
@@ -13,15 +18,19 @@
         {
         }
 
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Attendance> Attendances { get; set; }
-        public DbSet<Payroll> Payrolls { get; set; }
-        public DbSet<LeaveRequest> LeaveRequests { get; set; }
-        public DbSet<Service> Services { get; set; }
-        public DbSet<Customer> Customers { get; set; }
-        public DbSet<Asset> Assets { get; set; }
-        public DbSet<OccupancyHistory> OccupancyHistories { get; set; }
-        public DbSet<RentChange> RentChanges { get; set; }
+    public DbSet<Employee> Employees { get; set; }
+    public DbSet<Attendance> Attendances { get; set; }
+    public DbSet<Payroll> Payrolls { get; set; }
+    public DbSet<LeaveRequest> LeaveRequests { get; set; }
+    public DbSet<Service> Services { get; set; }
+
+
+    public DbSet<Customer> Customers { get; set; }
+    public DbSet<Asset> Assets { get; set; }
+    public DbSet<OccupancyHistory> OccupancyHistories { get; set; }
+    public DbSet<AssetInvoice> AssetInvoices { get; set; }
+
+    public DbSet<RentChange> RentChanges { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -68,12 +77,24 @@
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
-            modelBuilder.Entity<RentChange>()
-                .HasOne(rc => rc.User)
-                .WithMany()
-                .HasForeignKey(rc => rc.UserId)
-                .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired();
-        }
+        // Configure the relationship: One OccupancyHistory has many AssetInvoices
+        modelBuilder.Entity<AssetInvoice>()
+            .HasKey(ai => ai.AssetInvoiceId); // Primary key for AssetInvoice (separate from composite FK)
+
+        // Define the composite foreign key relationship between AssetInvoice and OccupancyHistory
+        modelBuilder.Entity<AssetInvoice>()
+            .HasOne(ai => ai.OccupancyHistory)
+            .WithMany(oh => oh.AssetInvoices)
+            .HasForeignKey(ai => new { ai.CustomerId, ai.AssetId });  // Composite foreign key
+
+        // Optionally, set delete behavior if required
+        modelBuilder.Entity<AssetInvoice>()
+            .HasOne(ai => ai.OccupancyHistory)
+            .WithMany(oh => oh.AssetInvoices)
+            .HasForeignKey(ai => new { ai.CustomerId, ai.AssetId })
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // invokes base class implementation of the 'OnModelCreating' method; 
+        base.OnModelCreating(modelBuilder);
     }
 }

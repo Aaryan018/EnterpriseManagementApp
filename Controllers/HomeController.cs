@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EnterpriseManagementApp.Controllers
 {
-    [Authorize(Roles = "Manager")] // Restrict to managers only
+    [Authorize(Roles = "Manager, Employee")] // Restrict to managers only
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

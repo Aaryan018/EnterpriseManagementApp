@@ -16,30 +16,13 @@
         {
             <section class="dashboard-card manager-card animate__animated animate__fadeInUp">
                 <h2 class="card-title">Welcome, Manager!</h2>
-                <p class="card-description">Manage your assets, renters, requests, and more with ease.</p>
-
-                <!-- Action Cards -->
-                <div class="action-cards">
-                    <a href="@Url.Action("Index", "Assets")" class="action-card assets-card">
-                        <i class="fas fa-building"></i>
-                        <h3>Assets Management</h3>
-                        <p>Oversee and manage all assets efficiently.</p>
-                    </a>
-                    <a href="@Url.Action("Index", "Customers")" class="action-card renters-card">
-                        <i class="fas fa-users"></i>
-                        <h3>View Renters</h3>
-                        <p>Access details of all renters.</p>
-                    </a>
-                    <a href="@Url.Action("Index", "Requests")" class="action-card requests-card">
-                        <i class="fas fa-check-circle"></i>
-                        <h3>Leave Requests</h3>
-                        <p>Review and approve leave requests.</p>
-                    </a>
-                    <a href="@Url.Action("Index", "OccupancyHistories")" class="action-card history-card">
-                        <i class="fas fa-history"></i>
-                        <h3>Occupancy History</h3>
-                        <p>Track past occupancy records.</p>
-                    </a>
+                <p class="card-description">Assets, Renters, Requests, and more with ease.</p>
+                <div class="card-actions">
+                    <a class="btn btn-primary" href="@Url.Action("Index", "Assets")"><i class="fas fa-building"></i> Assets Management</a>
+                    <a class="btn btn-secondary" href="@Url.Action("Index", "Customers")"><i class="fas fa-users"></i> View Renters</a>
+                    <a class="btn btn-warning" href="@Url.Action("Index", "Requests")"><i class="fas fa-check-circle"></i>Leave Requests</a>
+                    <a class="btn btn-info" href="@Url.Action("Index", "RentChange")"><i class="fas fa-dollar-sign"></i> Rent Changes</a>
+                    <a class="btn btn-success" href="@Url.Action("Index", "OccupancyHistories")"><i class="fas fa-history"></i> Occupancies </a>
                 </div>
 
                 <!-- Rent Change Requests Section -->
