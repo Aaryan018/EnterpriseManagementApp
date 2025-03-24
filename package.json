@@ -1,0 +1,17 @@
+{
+  "name": "enterprisemanagementapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+    "scripts": {
+        "start": "dotnet run",
+        "test1": "start-server-and-test start http://localhost:5047 'npx cypress run --spec cypress/e2e/AssetPay_spec.cy.js'"
+    },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^14.2.0",
+    "start-server-and-test": "^2.0.11"
+  }
+}
