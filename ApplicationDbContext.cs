@@ -94,6 +94,12 @@ using EnterpriseManagementApp.Models.Rentals;
             .HasForeignKey(ai => new { ai.CustomerId, ai.AssetId })
             .OnDelete(DeleteBehavior.Cascade);
 
+        // 1 - many relationship : EMployee -> Payroll
+        modelBuilder.Entity<Payroll>()
+            .HasOne(p => p.Employee)
+            .WithMany(e => e.Payrolls)
+            .HasForeignKey(p => p.EmployeeId);
+
         // invokes base class implementation of the 'OnModelCreating' method; 
         base.OnModelCreating(modelBuilder);
     }
