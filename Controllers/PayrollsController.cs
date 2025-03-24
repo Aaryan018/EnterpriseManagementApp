@@ -44,6 +44,26 @@ namespace EnterpriseManagementApp.Controllers
             return View(payroll);
         }
 
+        // Method to calculate payroll details
+        private void CalculatePayroll(Payroll payroll, DateTime clockedInTime, DateTime clockedOutTime)
+        {
+            // Regular Hours: Static 8 hours from 9 AM to 5 PM
+            payroll.RegularHours = 8;
+
+            // Overtime: Calculate if clocked out after 5 PM
+            payroll.OvertimeHours = (clockedOutTime.TimeOfDay > new TimeSpan(17, 0, 0)) ?
+                                    (clockedOutTime - clockedOutTime.Date.AddHours(17)).TotalHours : 0;
+
+            // Late Time: Calculate if clocked in after 9 AM
+            payroll.LateTimeHours = (clockedInTime.TimeOfDay > new TimeSpan(9, 0, 0)) ?
+                                    (clockedInTime - clockedInTime.Date.AddHours(9)).TotalHours : 0;
+
+            // Total Pay Calculation: Regular Pay + Overtime Pay + Late Time Pay
+            payroll.TotalPay += (payroll.RegularHours * payroll.HourlyRate) +
+                               (payroll.OvertimeHours * payroll.HourlyRate * 1.5) +
+                               (payroll.LateTimeHours * payroll.HourlyRate);
+        }
+
         // GET: Payrolls/Create
         public IActionResult Create()
         {
@@ -56,66 +76,55 @@ namespace EnterpriseManagementApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PayrollId,EmployeeId,PayrollGenerate,TotalPay,RegularHours,OvertimeHours,LateTimeHours")] Payroll payroll)
+        public async Task<IActionResult> Create([Bind("PayrollId,EmployeeId,PayrollGenerate,TotalPay,RegularHours,OvertimeHours,LateTimeHours,HourlyRate")] Payroll payroll)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(payroll);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Id", payroll.EmployeeId);
-            return View(payroll);
-        }
+                // Retrieve the employee's hourly rate
+                var employee = await _context.Employees.FindAsync(payroll.EmployeeId);
 
-        // GET: Payrolls/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var payroll = await _context.Payrolls.FindAsync(id);
-            if (payroll == null)
-            {
-                return NotFound();
-            }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Id", payroll.EmployeeId);
-            return View(payroll);
-        }
-
-        // POST: Payrolls/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PayrollId,EmployeeId,PayrollGenerate,TotalPay,RegularHours,OvertimeHours,LateTimeHours")] Payroll payroll)
-        {
-            if (id != payroll.PayrollId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                if (employee != null)
                 {
-                    _context.Update(payroll);
+                    payroll.HourlyRate = (double)employee.HourlyRate;
+
+                    // Fetch the Attendance records for the given EmployeeId
+                    var attendance = await _context.Attendances
+                        .Where(a => a.EmployeeId == payroll.EmployeeId)
+                        .ToListAsync();
+
+                    if (attendance.Count == 0)
+                    {
+                        ModelState.AddModelError("", "No attendance records found for this period.");
+                        return View(payroll);
+                    }
+
+                    // Loop through each attendance record to calculate the payroll
+                    foreach (var record in attendance)
+                    {
+                        // Calculate payroll details (regular, overtime, and late hours)
+                        if (record.ClockedInTime != null && record.ClockedOutTime != null)
+                        {
+                            // Calculate payroll details (regular, overtime, and late hours)
+                            CalculatePayroll(payroll, record.ClockedInTime, record.ClockedOutTime);
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", "Attendance record does not contain clock-in or clock-out times.");
+                            return View(payroll);
+                        }
+
+                    }
+
+                    // Save the payroll
+                    _context.Add(payroll);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!PayrollExists(payroll.PayrollId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    ModelState.AddModelError("", "Employee not found.");
+                    return View(payroll);
                 }
-                return RedirectToAction(nameof(Index));
             }
             ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Id", payroll.EmployeeId);
             return View(payroll);
@@ -136,7 +145,7 @@ namespace EnterpriseManagementApp.Controllers
             {
                 return NotFound();
             }
-
+            
             return View(payroll);
         }
 
