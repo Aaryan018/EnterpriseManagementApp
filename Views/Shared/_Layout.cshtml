@@ -23,7 +23,7 @@
 
         /* Navbar */
         .navbar {
-            background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+            background: linear-gradient(135deg, #218a94, #19676e);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             padding: 15px 0;
             position: sticky;
@@ -40,7 +40,7 @@
         }
 
             .navbar-brand:hover {
-                color: #d1e7ff !important;
+                color: #bbdefb !important;
                 transform: scale(1.05);
             }
 
@@ -63,7 +63,13 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
             text-decoration: none;
+            display: flex;
+            align-items: center;
         }
+
+            .nav-link i {
+                margin-right: 8px;
+            }
 
             .nav-link:hover {
                 background-color: rgba(255, 255, 255, 0.3);
@@ -94,6 +100,8 @@
             font-weight: 500;
             border-radius: 25px;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .btn-login {
@@ -122,75 +130,132 @@
 
         /* Responsive Design */
         @@media (max-width: 991px) {
-            .navbar-nav {
-                text-align: center;
-                margin-top: 20px;
-            }
+            .navbar-nav
 
-            .nav-item {
-                margin: 10px 0;
-            }
+        {
+            text-align: center;
+            margin-top: 20px;
+        }
 
-            .logout-form, .login-btn {
-                margin: 20px auto;
-                text-align: center;
-            }
+        .nav-item {
+            margin: 10px 0;
+        }
+
+        .logout-form, .login-btn {
+            margin: 20px auto;
+            text-align: center;
+        }
+
         }
 
         @@media (max-width: 576px) {
-            .navbar-brand {
-                font-size: 1.5rem;
-            }
+            .navbar-brand
 
-            .nav-link {
-                font-size: 1rem;
-                padding: 8px 15px;
-            }
+        {
+            font-size: 1.5rem;
+        }
 
-            .container {
-                margin: 20px auto;
-            }
+        .nav-link {
+            font-size: 1rem;
+            padding: 8px 15px;
+        }
+
+        .container {
+            margin: 20px auto;
+        }
+
         }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/Home/Index">ManageHousing</a>
+            <a class="navbar-brand" href="@(User.IsInRole("Manager") ? Url.Action("Index", "Home") :
+        User.IsInRole("Customer") ? Url.Action("Index", "Customers") :
+        Url.Action("Index", "Home"))">ManageHousing</a>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
+
                     @if (User.IsInRole("Manager"))
                     {
                         <li class="nav-item">
-                            <a class="nav-link" href="/Assets/Index"><i class="fas fa-building"></i> Manage Assets</a>
+                            <a class="nav-link" href="@Url.Action("Index", "Assets")"><i class="fas fa-building"></i> Manage Assets</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/Customers/Index"><i class="fas fa-users"></i> View Renters</a>
+                            <a class="nav-link" href="@Url.Action("Index", "Customers")"><i class="fas fa-users"></i> View Renters</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/Requests/ApproveRequests"><i class="fas fa-check-circle"></i> Approve Requests</a>
+                            <a class="nav-link" href="@Url.Action("Index", "Requests")"><i class="fas fa-check-circle"></i> View Leave Requests</a>
                         </li>
                     }
                     else if (User.IsInRole("Customer"))
                     {
-                        <li class="nav-item">
-                            <a class="nav-link" href="/Customers/Index"><i class="fas fa-home"></i> Your Rentals</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/Renters/RequestChange"><i class="fas fa-edit"></i> Request Change</a>
-                        </li>
+                        @* <li class="nav-item dropdown"> *@
+                        @*     <a class="nav-link dropdown-toggle" href="#" id="rentChangesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"> *@
+                        @*         <i class="fas fa-home"></i> Manage Rents *@
+                        @*     </a> *@
+                        @*     <ul class="dropdown-menu" aria-labelledby="rentChangesDropdown"> *@
+                        @*         <li> *@
+                        @*             <a class="dropdown-item" href="@Url.Action("Index", "RentChanges")"> *@
+                        @*                 <i class="fas fa-list"></i> View Rent Changes *@
+                        @*             </a> *@
+                        @*         </li> *@
+                        @*         <li> *@
+                        @*             <a class="dropdown-item" href="@Url.Action("Create", "RentChanges")"> *@
+                        @*                 <i class="fas fa-edit"></i> Request Change *@
+                        @*             </a> *@
+                        @*         </li> *@
+                        @*     </ul> *@
+                        @* </li> *@
+
+                        @* <li class="nav-item dropdown"> *@
+                        @*     <a class="nav-link dropdown-toggle" href="#" id="customerAssetsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"> *@
+                        @*         <i class="fas fa-box"></i> Manage Assets *@
+                        @*     </a> *@
+                        @*     <ul class="dropdown-menu" aria-labelledby="customerAssetsDropdown"> *@
+                        @*         <li> *@
+                        @*             <a class="dropdown-item" href="@Url.Action("Index", "Assets")"> *@
+                        @*                 <i class="fas fa-list"></i> View Assets *@
+                        @*             </a> *@
+                        @*         </li> *@
+                        @*         <li> *@
+                        @*             <a class="dropdown-item" href="@Url.Action("Create", "Assets")"> *@
+                        @*                 <i class="fas fa-edit"></i> Request Asset *@
+                        @*             </a> *@
+                        @*         </li> *@
+                        @*     </ul> *@
+                        @* </li> *@
+
+                        @* <li class="nav-item dropdown"> *@
+                        @*     <a class="nav-link dropdown-toggle" href="#" id="customerLeavesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"> *@
+                        @*         <i class="fas fa-calendar-alt"></i> Manage Leaves *@
+                        @*     </a> *@
+                        @*     <ul class="dropdown-menu" aria-labelledby="customerLeavesDropdown"> *@
+                        @*         <li> *@
+                        @*             <a class="dropdown-item" href="@Url.Action("Index", "Requests")"> *@
+                        @*                 <i class="fas fa-list"></i> View Leaves *@
+                        @*             </a> *@
+                        @*         </li> *@
+                        @*         <li> *@
+                        @*             <a class="dropdown-item" href="@Url.Action("Create", "Requests")"> *@
+                        @*                 <i class="fas fa-edit"></i> Request Leave *@
+                        @*             </a> *@
+                        @*         </li> *@
+                        @*     </ul> *@
+                        @* </li> *@
                     }
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Home/Index"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                    </li>
+
                 </ul>
 
+                <!-- Authentication Section -->
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <form action="/Account/Logout" method="post" class="logout-form">
+                    <form action="@Url.Action("Logout", "Account")" method="post" class="logout-form">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
                     </form>
@@ -198,12 +263,13 @@
                 else
                 {
                     <div class="login-btn">
-                        <a href="/Account/SignIn" class="btn-login"><i class="fas fa-sign-in-alt"></i> Login</a>
+                        <a href="@Url.Action("SignIn", "Account")" class="btn-login"><i class="fas fa-sign-in-alt"></i> Login</a>
                     </div>
                 }
             </div>
         </div>
     </nav>
+
 
     <div class="container">
         @RenderBody()

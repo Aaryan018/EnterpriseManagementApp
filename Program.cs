@@ -18,7 +18,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-
 // Add session support for anti-forgery token validation
 builder.Services.AddSession(options =>
 {
@@ -42,28 +41,20 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
     });
 
-
 var app = builder.Build();
-
 
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    //dbContext.Database.EnsureCreated();
-
-
-    // dbContext.Database.EnsureCreated();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
 
     Console.WriteLine("Resetting database...");
     await dbContext.Database.EnsureDeletedAsync();  
     await dbContext.Database.EnsureCreatedAsync();
     Console.WriteLine("Database reset successfully.");
 
-
-    // Seed data (add users, renters, assets)
+    // Seed data (add users, renters, assets) without recreating the database
     try
     {
         await SeedData.Initialize(scope.ServiceProvider);
@@ -76,33 +67,27 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
 
-//
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 // Add session middleware
 app.UseSession();
 
-// Add authentication and authorization middleware
-app.UseAuthentication(); // Ensure authentication middleware is here
-app.UseAuthorization();
-
-app.UseStaticFiles();
-
+// Add routing middleware
 app.UseRouting();
 
+// Add authentication and authorization middleware in the correct order
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-    //pattern: "{controller=Account}/{action=SignIn}/{id?}");
+    pattern: "{controller=Account}/{action=SignIn}/{id?}");
 
 app.Run();

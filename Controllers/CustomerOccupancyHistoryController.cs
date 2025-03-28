@@ -1,34 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using NuGet.ContentModel;
 using EnterpriseManagementApp;
-using EnterpriseManagementApp.DTO;
 using EnterpriseManagementApp.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System.Diagnostics;
 
 namespace EnterpriseManagementApp.Controllers
 {
-    [Authorize(Roles = "Manager")]
-    public class OccupancyHistoriesController : Controller
+    [Authorize(Roles = "Customer")]
+    public class CustomerOccupancyHistoryController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public OccupancyHistoriesController(ApplicationDbContext context)
+        public CustomerOccupancyHistoryController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: OccupancyHistories
+        // GET: CustomerOccupancyHistory
         public async Task<IActionResult> Index()
         {
+            // Get the logged-in user's CustomerId (assuming the claim type is 'sub' or 'NameIdentifier')
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(currentUserId))
+            {
+                return Unauthorized(); // In case the user is not logged in properly
+            }
+
             // Retrieve the records, ordered by status
             var occupancyHistories = await _context.OccupancyHistories
+                .Where(o => o.CustomerId == currentUserId) // Filter by CustomerId
                 .Include(o => o.Asset)
                 .Include(o => o.Customer)
                 .OrderBy(oh => oh.Status == "Pending" ? 0 :
@@ -73,51 +81,82 @@ namespace EnterpriseManagementApp.Controllers
             // Save changes to the database
             await _context.SaveChangesAsync();
 
-            // Pass the modified records to the view
             return View(occupancyHistories);
-
         }
 
-        // GET: OccupancyHistories/Details/5
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: CustomerOccupancyHistory/Details/5
+        //public async Task<IActionResult> Details(string id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var occupancyHistory = await _context.OccupancyHistories
-                .Include(o => o.Asset)
-                .Include(o => o.Customer)
-                .FirstOrDefaultAsync(m => m.OccupancyHistoryId == id);
-            if (occupancyHistory == null)
-            {
-                return NotFound();
-            }
+        //    var occupancyHistory = await _context.OccupancyHistories
+        //        .Include(o => o.Asset)
+        //        .Include(o => o.Customer)
+        //        .FirstOrDefaultAsync(m => m.CustomerId == id);
+        //    if (occupancyHistory == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(occupancyHistory);
-        }
+        //    return View(occupancyHistory);
+        //}
 
-        // GET: OccupancyHistories/Create
+        // GET: CustomerOccupancyHistory/Create
         public IActionResult Create()
         {
+            // Check if the user is in the Customer role
+            if (User.IsInRole("Customer"))
+            {
+                // Set the CustomerId to the logged-in user's CustomerId
+                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // Fetch the CustomerId from the database for the logged-in user
+                var customer = _context.Customers.FirstOrDefault(c => c.Id == currentUserId); // Assuming "UserId" is used to map to the User in your DB
+
+                if (currentUserId != null)
+                {
+                    ViewData["CustomerId"] = currentUserId;
+                }
+                //if (customer != null)
+                //{
+                //    ViewData["CustomerId"] = customer.Id;
+                //} else
+                //{
+                //    ViewData["CustomerId"] = "fails";
+                //}
+            }
+
+
             ViewData["AssetId"] = new SelectList(_context.Assets, "AssetId", "Name");
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "FullName");
             return View();
         }
 
-        // POST: OccupancyHistories/Create
+        // POST: CustomerOccupancyHistory/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CustomerId,AssetId,Start,End,Paid,TotalDue")] OccupancyHistory occupancyHistory)
         {
+            //if (ModelState.IsValid)
+            //{
+            //    _context.Add(occupancyHistory);
+            //    await _context.SaveChangesAsync();
+            //    return RedirectToAction(nameof(Index));
+            //}
+            //ViewData["AssetId"] = new SelectList(_context.Assets, "AssetId", "Address", occupancyHistory.AssetId);
+            //ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", occupancyHistory.CustomerId);
+            //return View(occupancyHistory);
+
             // Check if the model is valid
             if (ModelState.IsValid)
             {
                 try
                 {
+
                     // Get the related Customer and Asset entities from the database
                     occupancyHistory.Customer = await _context.Customers
                         .FirstOrDefaultAsync(c => c.Id == occupancyHistory.CustomerId);
@@ -126,6 +165,7 @@ namespace EnterpriseManagementApp.Controllers
                         .FirstOrDefaultAsync(a => a.AssetId == occupancyHistory.AssetId);
 
                     Debug.WriteLine("OH create - CP1");
+                    Debug.WriteLine("CustomerId binded: " + occupancyHistory.CustomerId);
                     Debug.WriteLine("Cus: " + occupancyHistory.Customer);
                     Debug.WriteLine("CusType: " + occupancyHistory.Customer.GetType());
 
@@ -192,7 +232,7 @@ namespace EnterpriseManagementApp.Controllers
                             Debug.WriteLine($"Inner exception: {dbEx.InnerException.Message}");
                         }
 
-                        ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "FullName", occupancyHistory.CustomerId);
+                        ViewData["CustomerId"] = occupancyHistory.CustomerId;
 
                         // Exclude AssetIds that are already in the OccupancyHistory for the selected CustomerId
                         var occupiedAssets = _context.OccupancyHistories
@@ -270,142 +310,99 @@ namespace EnterpriseManagementApp.Controllers
             return View(occupancyHistory);
         }
 
-        // GET: OccupancyHistories/Edit/5
-        public async Task<IActionResult> Edit(string CustomerId, Guid? AssetId)
+        //// GET: CustomerOccupancyHistory/Edit/5
+        //public async Task<IActionResult> Edit(string id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var occupancyHistory = await _context.OccupancyHistories.FindAsync(id);
+        //    if (occupancyHistory == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    ViewData["AssetId"] = new SelectList(_context.Assets, "AssetId", "Address", occupancyHistory.AssetId);
+        //    ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", occupancyHistory.CustomerId);
+        //    return View(occupancyHistory);
+        //}
+
+        //// POST: CustomerOccupancyHistory/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(string id, [Bind("OccupancyHistoryId,CustomerId,AssetId,Start,End,Paid,TotalDue,RemainingBalance,Status")] OccupancyHistory occupancyHistory)
+        //{
+        //    if (id != occupancyHistory.CustomerId)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            _context.Update(occupancyHistory);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!OccupancyHistoryExists(occupancyHistory.CustomerId))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["AssetId"] = new SelectList(_context.Assets, "AssetId", "Address", occupancyHistory.AssetId);
+        //    ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", occupancyHistory.CustomerId);
+        //    return View(occupancyHistory);
+        //}
+
+        //// GET: CustomerOccupancyHistory/Delete/5
+        //public async Task<IActionResult> Delete(string id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var occupancyHistory = await _context.OccupancyHistories
+        //        .Include(o => o.Asset)
+        //        .Include(o => o.Customer)
+        //        .FirstOrDefaultAsync(m => m.CustomerId == id);
+        //    if (occupancyHistory == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return View(occupancyHistory);
+        //}
+
+        //// POST: CustomerOccupancyHistory/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(string id)
+        //{
+        //    var occupancyHistory = await _context.OccupancyHistories.FindAsync(id);
+        //    if (occupancyHistory != null)
+        //    {
+        //        _context.OccupancyHistories.Remove(occupancyHistory);
+        //    }
+
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
+
+        private bool OccupancyHistoryExists(string id)
         {
-            if (CustomerId == null || AssetId == null)
-            {
-                return NotFound();
-            }
-
-            //var occupancyHistory = await _context.OccupancyHistories.FindAsync(id);
-
-            var occupancyHistory = await _context.OccupancyHistories
-                .FirstOrDefaultAsync(o => o.CustomerId == CustomerId && o.AssetId == AssetId);
-
-
-            if (occupancyHistory == null)
-            {
-                return NotFound();
-            }
-            ViewData["AssetId"] = new SelectList(_context.Assets, "AssetId", "Address", occupancyHistory.AssetId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "Address", occupancyHistory.CustomerId);
-            return View(occupancyHistory);
-        }
-
-        // POST: OccupancyHistories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("OccupancyHistoryId,CustomerId,AssetId,Start,End,Paid,AmmountDue,Status")] OccupancyHistory occupancyHistory)
-        {
-            //if (id != occupancyHistory.OccupancyHistoryId)
-            //{
-            //    Debug.WriteLine("id: " + id);
-            //    Debug.WriteLine("CustomerId: " + occupancyHistory.CustomerId);
-            //    Debug.WriteLine("CP0 - id not found");
-            //    return NotFound();
-            //}
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(occupancyHistory);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!OccupancyHistoryExists(occupancyHistory.OccupancyHistoryId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["AssetId"] = new SelectList(_context.Assets, "AssetId", "Address", occupancyHistory.AssetId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "Address", occupancyHistory.CustomerId);
-            Debug.WriteLine("CP - Model State Invalid");
-            // Log the values of the incoming model for debugging
-            Debug.WriteLine("OCID: " + occupancyHistory.OccupancyHistoryId);
-            Debug.WriteLine("CusId: " + occupancyHistory.CustomerId);
-            Debug.WriteLine("AssetId: " + occupancyHistory.AssetId);
-            Debug.WriteLine("start: " + occupancyHistory.Start);
-            Debug.WriteLine("end: " + occupancyHistory.End);
-            Debug.WriteLine("paid: " + occupancyHistory.Paid);
-            Debug.WriteLine("total due: " + occupancyHistory.TotalDue);
-            Debug.WriteLine("status: " + occupancyHistory.Status);
-            return View(occupancyHistory);
-        }
-
-        // GET: OccupancyHistories/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Debug.WriteLine(id);
-
-            var occupancyHistory = await _context.OccupancyHistories
-                .Include(o => o.Asset)
-                .Include(o => o.Customer)
-                .FirstOrDefaultAsync(m => m.OccupancyHistoryId == id);
-            if (occupancyHistory == null)
-            {
-                return NotFound();
-            }
-
-            return View(occupancyHistory);
-        }
-
-        // POST: OccupancyHistories/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            Debug.WriteLine("id [passed to delete post]: " + id);
-
-            var occupancyHistory = await _context.OccupancyHistories
-                .FirstOrDefaultAsync(o => o.OccupancyHistoryId == id);
-
-            if (occupancyHistory != null)
-            {
-                _context.OccupancyHistories.Remove(occupancyHistory);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-
-        private bool OccupancyHistoryExists(Guid id)
-        {
-            return _context.OccupancyHistories.Any(e => Guid.Parse(e.CustomerId) == id);
-        }
-
-        // GET: OccupancyHistories/GetAvailableAssets
-        public JsonResult GetAvailableAssets(string customerId)
-        {
-            // Get the occupied AssetIds for the given CustomerId
-            var occupiedAssets = _context.OccupancyHistories
-                                        .Where(oh => oh.CustomerId == customerId)
-                                        .Select(oh => oh.AssetId)
-                                        .ToList();
-
-            // Get the available assets by excluding the occupied ones
-            var availableAssets = _context.Assets
-                                          .Where(a => !occupiedAssets.Contains(a.AssetId))
-                                          .Select(a => new { a.AssetId, a.Name })
-                                          .ToList();
-
-            return Json(availableAssets);
+            return _context.OccupancyHistories.Any(e => e.CustomerId == id);
         }
     }
 }

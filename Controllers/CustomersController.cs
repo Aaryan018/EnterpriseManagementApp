@@ -1,158 +1,206 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using EnterpriseManagementApp;
 using EnterpriseManagementApp.Models;
+using System.Security.Claims;
 
 namespace EnterpriseManagementApp.Controllers
 {
+    [Authorize] // Require authentication for all actions
     public class CustomersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CustomersController(ApplicationDbContext context)
+        public CustomersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // GET: Customers
+        // GET: Customers (Filtered based on role)
+        [Authorize(Roles = "Manager,Customer")] // Updated to "Customer"
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Customers.ToListAsync());
+            if (User.IsInRole("Manager"))
+            {
+                // Managers can see all users with the "Customer" role
+                var customers = await _userManager.GetUsersInRoleAsync("Customer");
+                Console.WriteLine($"Manager view: {customers.Count} customers found.");
+                return View(customers);
+            }
+            else if (User.IsInRole("Customer"))
+            {
+                // Customers can only see their own data
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    Console.WriteLine("User ID not found for Customer.");
+                    return Unauthorized("User ID not found.");
+                }
+
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    Console.WriteLine($"User not found for ID: {userId}");
+                    return NotFound("User not found.");
+                }
+
+                var model = new List<ApplicationUser> { user };
+                Console.WriteLine($"Customer model: {string.Join(", ", model.Select(u => u.Email))}");
+                return View(model);
+            }
+
+            return Unauthorized("User role not recognized.");
         }
 
-        // GET: Customers/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        // GET: Customers/Details/5 (Viewable by both Managers and Customers)
+        [Authorize(Roles = "Manager,Customer")] // Updated to "Customer"
+        public async Task<IActionResult> Details(string id)
         {
-            if (id == null)
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            var customer = await _context.Customers
-                .FirstOrDefaultAsync(m => m.Id == id.ToString());
-            if (customer == null)
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return View(customer);
+            // For customers, ensure they can only view their own record
+            if (User.IsInRole("Customer"))
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId != id)
+                {
+                    return Unauthorized("You can only view your own data.");
+                }
+            }
+
+            return View(user);
         }
 
-        // GET: Customers/Create
+        // GET: Customers/Create (Manager-only)
+        [Authorize(Roles = "Manager")]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: Customers/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,Name,Address,PhoneNumber,Email,EmergencyContact,FamilyDoctor")] Customer customer)
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> Create([Bind("Id,FullName,Address,PhoneNumber,Email,EmergencyContact")] ApplicationUser user, string password)
         {
             if (ModelState.IsValid)
             {
-                customer.Id = Guid.NewGuid().ToString();
-                _context.Add(customer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                user.UserName = user.Email; // Set username to email
+                var result = await _userManager.CreateAsync(user, password);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "Customer"); // Updated to "Customer"
+                    return RedirectToAction(nameof(Index));
+                }
+                AddErrors(result);
             }
-            return View(customer);
+            return View(user);
         }
 
-        // GET: Customers/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        private void AddErrors(IdentityResult result)
         {
-            if (id == null)
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+        }
+
+        // GET: Customers/Edit/5 (Manager-only)
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null)
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
             {
                 return NotFound();
             }
-            return View(customer);
+            return View(user);
         }
 
         // POST: Customers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("UserId,Name,Address,PhoneNumber,Email,EmergencyContact,FamilyDoctor")] Customer customer)
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> Edit(string id, [Bind("Id,FullName,Address,PhoneNumber,Email,EmergencyContact")] ApplicationUser user)
         {
-            if (id != Guid.Parse(customer.Id))
+            if (id != user.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
+                var existingUser = await _userManager.FindByIdAsync(id);
+                if (existingUser != null)
                 {
-                    _context.Update(customer);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CustomerExists(Guid.Parse(customer.Id)))
+                    existingUser.FullName = user.FullName;
+                    existingUser.Address = user.Address;
+                    existingUser.PhoneNumber = user.PhoneNumber;
+                    existingUser.Email = user.Email;
+                    existingUser.EmergencyContact = user.EmergencyContact;
+
+                    var result = await _userManager.UpdateAsync(existingUser);
+                    if (result.Succeeded)
                     {
-                        return NotFound();
+                        return RedirectToAction(nameof(Index));
                     }
-                    else
-                    {
-                        throw;
-                    }
+                    AddErrors(result);
                 }
-                return RedirectToAction(nameof(Index));
             }
-            return View(customer);
+            return View(user);
         }
 
-        // GET: Customers/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        // GET: Customers/Delete/5 (Manager-only)
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> Delete(string id)
         {
-            if (id == null)
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            var customer = await _context.Customers
-                .FirstOrDefaultAsync(m => m.Id == id.ToString());
-            if (customer == null)
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return View(customer);
+            return View(user);
         }
 
         // POST: Customers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer != null)
+            var user = await _userManager.FindByIdAsync(id);
+            if (user != null)
             {
-                _context.Customers.Remove(customer);
+                await _userManager.DeleteAsync(user);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool CustomerExists(Guid id)
-        {
-            return _context.Customers.Any(e => e.Id == id.ToString());
         }
     }
 }
