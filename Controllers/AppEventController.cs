@@ -22,6 +22,10 @@ namespace EnterpriseManagementApp.Controllers
         // GET: AppEvent/Index
         public async Task<IActionResult> Index()
         {
+            if (!User?.Identity?.IsAuthenticated ?? false)
+            {
+                return RedirectToAction("Signin", "Account");
+            }
             var userName = User?.Identity?.Name;
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
             ViewData["UserRole"] = user.Role;
@@ -35,7 +39,7 @@ namespace EnterpriseManagementApp.Controllers
                 .Include(e => e.Service)   // Include Service details
                 .Include(e => e.Customers); // Include Customers linked to the event
 
-            if (user.Role == "Client")
+            if (user.Role == "Customer")
             {
                 // 1️⃣ Find the current logged-in customer's ID
                 var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == user.Id);
@@ -114,7 +118,7 @@ namespace EnterpriseManagementApp.Controllers
 
             List<Customer> eventCustomers = new List<Customer>();
 
-            if (user.Role == "Client")
+            if (user.Role == "Customer")
             {
                 // 1️⃣ Find the currently logged-in customer's ID
                 var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == user.Id);

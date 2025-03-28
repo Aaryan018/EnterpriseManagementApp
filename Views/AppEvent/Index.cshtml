@@ -5,7 +5,7 @@
     string userRole = ViewData["UserRole"] as string;
 }
 
-@if (userRole == "Client")
+@if (userRole == "Customer")
 {
     <h1>My Events</h1>
 }
@@ -58,7 +58,7 @@ else
         </td>
 
         <td>
-            @if (userRole != "Manager" || userRole != "Client")
+            @if (userRole != "Manager" || userRole != "Customer")
             {
                 <text>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

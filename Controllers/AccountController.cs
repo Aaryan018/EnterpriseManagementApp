@@ -127,7 +127,7 @@ namespace EnterpriseManagementApp.Controllers
                     Console.WriteLine("Redirecting to Home/Index for Manager");
                     return RedirectToAction("Index", "Home"); // Redirect Manager to Home/Index (Common Dashboard)
                 }
-                else if (model.Role == "Client")
+                else if (model.Role == "Customer")
                 {
                     Console.WriteLine("Redirecting to Renters/Index for Client");
                     return RedirectToAction("Index", "Renters"); // Updated for Client

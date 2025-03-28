@@ -23,7 +23,7 @@ namespace EnterpriseManagementApp.Controllers
             var userId = User?.Identity?.Name; 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
 
-            if (user == null || user?.Role == "Client")
+            if (user == null || user?.Role == "Customer")
             {
                 return Unauthorized();
             }
