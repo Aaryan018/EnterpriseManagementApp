@@ -5,7 +5,7 @@
     string userRole = ViewData["UserRole"] as string;
 }
 
-@if (userRole == "Customer")
+@if (userRole == "Employee")
 {
     <h1>My Events</h1>
 }
@@ -14,9 +14,13 @@ else
     <h1>Events</h1>
 }
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (userRole == "Manager")
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
+
 <table class="table">
     <thead>
     <tr>

@@ -43,7 +43,8 @@ namespace EnterpriseManagementApp
                     Address = "E way 1220",
                     PhoneNumber = "111-222-2828",
                     EmergencyContact = "911-911-9111",
-                    Role = "Employee"
+                    Role = "Employee",
+                    Qualifications = "License A"
                 };
                 var result = await userManager.CreateAsync(employee, "Employee@123");
                 if (result.Succeeded)
