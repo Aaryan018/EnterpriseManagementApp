@@ -287,41 +287,41 @@ namespace EnterpriseManagementApp
                 Console.WriteLine($"Found {assetCount} assets in the database.");
             }
 
-            // Seed RentChange Data - Removed RentAmount and RentChangeDate
-            if (!dbContext.RentChanges.Any())
-            {
-                var customer = dbContext.Customers.FirstOrDefault();
-                var asset = dbContext.Assets.FirstOrDefault();
+            //// Seed RentChange Data - Removed RentAmount and RentChangeDate
+            //if (!dbContext.RentChanges.Any())
+            //{
+            //    var customer = dbContext.Customers.FirstOrDefault();
+            //    var asset = dbContext.Assets.FirstOrDefault();
 
-                if (customer != null && asset != null)
-                {
-                    var rentChange = new RentChange
-                    {
-                        UserId = customer.Id, // Set the correct UserId here
-                        // Add any other properties needed here
-                    };
+            //    if (customer != null && asset != null)
+            //    {
+            //        var rentChange = new RentChange
+            //        {
+            //            UserId = customer.Id, // Set the correct UserId here
+            //            // Add any other properties needed here
+            //        };
 
-                    dbContext.RentChanges.Add(rentChange);
-                    try
-                    {
-                        await dbContext.SaveChangesAsync();
-                        Console.WriteLine($"RentChange created successfully for User={customer.FullName}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error seeding RentChange: {ex.Message}");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("No customer or asset found to seed RentChange. Please seed customer and asset first.");
-                }
-            }
-            else
-            {
-                var rentChangeCount = dbContext.RentChanges.Count();
-                Console.WriteLine($"Found {rentChangeCount} RentChange records in the database.");
-            }
+            //        dbContext.RentChanges.Add(rentChange);
+            //        try
+            //        {
+            //            await dbContext.SaveChangesAsync();
+            //            Console.WriteLine($"RentChange created successfully for User={customer.FullName}");
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            Console.WriteLine($"Error seeding RentChange: {ex.Message}");
+            //        }
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine("No customer or asset found to seed RentChange. Please seed customer and asset first.");
+            //    }
+            //}
+            //else
+            //{
+            //    var rentChangeCount = dbContext.RentChanges.Count();
+            //    Console.WriteLine($"Found {rentChangeCount} RentChange records in the database.");
+            //}
         }
     }
 
