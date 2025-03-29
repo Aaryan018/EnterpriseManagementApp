@@ -37,39 +37,6 @@ using EnterpriseManagementApp.Models.Rentals;
     // Used to configure the model(s) before it is used to generate the database schema or to map entities to db tables; is called when EF Core
     // is building the model during app startup
     // modelBuilder param provides API's for configuring entities and relationships
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Employee>()
-            .ToTable("Employees");
-
-        modelBuilder.Entity<Customer>()
-            .ToTable("Customers");
-
-
-        
-
-        // Configuring the many-to-many relationship using the join table OccupancyHistory (Customer <->  Asset)
-        modelBuilder.Entity<OccupancyHistory>()
-            .HasKey(oh => new { oh.CustomerId, oh.AssetId });  // Composite key for the join table
-
-        modelBuilder.Entity<OccupancyHistory>()
-            .HasOne(oh => oh.Customer)
-            .WithMany(r => r.OccupancyHistories)
-            .HasForeignKey(oh => oh.CustomerId);
-
-        modelBuilder.Entity<OccupancyHistory>()
-            .HasOne(oh => oh.Asset)
-            .WithMany(a => a.OccupancyHistories)
-            .HasForeignKey(oh => oh.AssetId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        // Configuring the 1-to-many relationship between Asset and RentChange
-        modelBuilder.Entity<RentChange>()
-            .HasOne(rc => rc.Asset)  // RentChange has one Asset
-            .WithMany(a => a.RentChanges)  // Asset can have many RentChanges
-            .HasForeignKey(rc => rc.AssetId)  // Foreign key in RentChange
-            .OnDelete(DeleteBehavior.Cascade);  // You can change the delete behavior as needed
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
