@@ -20,7 +20,7 @@ namespace EnterpriseManagementApp.Controllers
             _userManager = userManager;
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Manager, Employee")]
         public async Task<IActionResult> Index()
         {
             var leaveRequests = await _context.LeaveRequests
@@ -49,7 +49,7 @@ namespace EnterpriseManagementApp.Controllers
             return View(leaveRequest);
         }
 
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Employee, Manager")]
         public async Task<IActionResult> Create()
         {
             var userId = _userManager.GetUserId(User);
@@ -92,7 +92,7 @@ namespace EnterpriseManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Employee, Manager")]
         public async Task<IActionResult> Create([Bind("StartDate,EndDate,Type")] LeaveRequest leaveRequest)
         {
             // Get Current User ID

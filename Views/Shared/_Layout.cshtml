@@ -249,6 +249,12 @@
                         @*     </ul> *@
                         @* </li> *@
                     }
+                          @if (User.IsInRole("Employee"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Requests")"><i class="fas fa-building"></i> My Requests </a>
+                        </li>
+                    }
 
                 </ul>
 
