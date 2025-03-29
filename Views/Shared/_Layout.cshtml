@@ -192,6 +192,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="@Url.Action("Index", "Requests")"><i class="fas fa-check-circle"></i> View Leave Requests</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Requests/Create"><i class="fas fa-edit"></i> Apply for Leave</a>
+                        </li>
                     }
                     else if (User.IsInRole("Customer"))
                     {
@@ -249,10 +252,10 @@
                         @*     </ul> *@
                         @* </li> *@
                     }
-                          @if (User.IsInRole("Employee"))
+                        else if (User.IsInRole("Employee"))
                     {
                         <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "Requests")"><i class="fas fa-building"></i> My Requests </a>
+                            <a class="nav-link" href="@Url.Action("Index", "Requests")"><i class="fas fa-building"></i> My Leave Requests </a>
                         </li>
                     }
 

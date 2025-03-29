@@ -26,6 +26,6 @@ namespace EnterpriseManagementApp.Models
 
         public bool Paid { get; set; }
 
-        public Employee Employee { get; set; }
+        public Employee? Employee { get; set; }
     }
 }
