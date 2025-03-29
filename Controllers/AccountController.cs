@@ -158,6 +158,7 @@ namespace EnterpriseManagementApp.Controllers
                     Console.WriteLine("Redirecting to Home/Index for Manager");
                     return RedirectToAction("Index", "Home");
                 }
+
                 else if (model.Role == "Customer") // Updated to "Customer"
                 {
                     Console.WriteLine("Redirecting to Customers/Index for Customer");

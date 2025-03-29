@@ -36,7 +36,7 @@ namespace EnterpriseManagementApp.Models
             ErrorMessage = "Invalid phone number format. Please use (XXX) XXX-XXXX or XXX-XXX-XXXX.")]
         public string? EmergencyContact { get; set; }
 
-        public string Role { get; set; } = "Client"; // Default role to Client
+        public string Role { get; set; } = "Customer"; // Default role to Client
 
     }
 }

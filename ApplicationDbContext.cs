@@ -1,4 +1,5 @@
-﻿namespace EnterpriseManagementApp;
+using Microsoft.EntityFrameworkCore;
+namespace EnterpriseManagementApp;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +33,10 @@ using EnterpriseManagementApp.Models.Rentals;
 
     public DbSet<RentChange> RentChanges { get; set; }
 
+
+    // Used to configure the model(s) before it is used to generate the database schema or to map entities to db tables; is called when EF Core
+    // is building the model during app startup
+    // modelBuilder param provides API's for configuring entities and relationships
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -41,20 +46,22 @@ using EnterpriseManagementApp.Models.Rentals;
 
             modelBuilder.Entity<Customer>()
                 .ToTable("Customers");
+        // Configure many-to-many relationship with a custom join table name
+        modelBuilder.Entity<AppEvent>()
+            .HasMany(e => e.Customers)
+            .WithMany(c => c.Events);
 
-            modelBuilder.Entity<Event>()
-                .HasMany(e => e.Customers)
-                .WithMany(c => c.Events);
+        // Example of linking Event -> Service
+        modelBuilder.Entity<AppEvent>()
+            .HasOne(e => e.Service)
+            .WithMany(s => s.Events)
+            .HasForeignKey(e => e.ServiceId);
 
-            modelBuilder.Entity<Event>()
-                .HasOne(e => e.Service)
-                .WithMany(s => s.Events)
-                .HasForeignKey(e => e.ServiceId);
-
-            modelBuilder.Entity<Attendance>()
-                .HasOne(a => a.Event)
-                .WithMany(e => e.Attendances)
-                .HasForeignKey(a => a.EventId);
+        // Attendance -> Event
+        modelBuilder.Entity<Attendance>()
+            .HasOne(a => a.Event)
+            .WithMany(e => e.Attendances)
+            .HasForeignKey(a => a.EventId);
 
             modelBuilder.Entity<OccupancyHistory>()
                 .HasKey(oh => new { oh.CustomerId, oh.AssetId });
@@ -94,7 +101,12 @@ using EnterpriseManagementApp.Models.Rentals;
             .HasForeignKey(ai => new { ai.CustomerId, ai.AssetId })
             .OnDelete(DeleteBehavior.Cascade);
 
+
         // invokes base class implementation of the 'OnModelCreating' method; 
         base.OnModelCreating(modelBuilder);
     }
+
+
+public DbSet<AppEvent> AppEvent { get; set; } = default!;
 }
+
