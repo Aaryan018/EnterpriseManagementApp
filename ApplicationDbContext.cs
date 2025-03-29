@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 
 using EnterpriseManagementApp.Models;
-//using Test2.Models.OldModels;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using EnterpriseManagementApp.Models.Rentals;
 

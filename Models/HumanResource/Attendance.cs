@@ -10,8 +10,8 @@ public class Attendance
     // Foreign key to Event
     public int EventId { get; set; }
 
-    public DateTime? ClockedInTime { get; set; }
-    public DateTime? ClockedOutTime { get; set; }
+    public DateTime ClockedInTime { get; set; }
+    public DateTime ClockedOutTime { get; set; }
     public DayType? DayType { get; set; }
 
     // Navigation properties

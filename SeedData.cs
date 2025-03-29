@@ -44,7 +44,8 @@ namespace EnterpriseManagementApp
                     PhoneNumber = "111-222-2828",
                     EmergencyContact = "911-911-9111",
                     Role = "Employee",
-                    Qualifications = "License A"
+                    Qualifications = "License A",
+                    HourlyRate = 20.00
                 };
                 var result = await userManager.CreateAsync(employee, "Employee@123");
                 if (result.Succeeded)
@@ -73,7 +74,8 @@ namespace EnterpriseManagementApp
                     Address = "Mng Way 4440",
                     PhoneNumber = "111-222-2828",
                     EmergencyContact = "911-911-9111",
-                    Role = "Manager"
+                    Role = "Manager",
+                    HourlyRate = 39.00
                 };
                 var result = await userManager.CreateAsync(manager, "Manager@123");
                 if (result.Succeeded)
