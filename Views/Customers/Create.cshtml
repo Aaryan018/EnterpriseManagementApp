@@ -1,58 +1,89 @@
-﻿@model EnterpriseManagementApp.Models.Customer
+﻿@model EnterpriseManagementApp.Models.ApplicationUser
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Renter";
 }
 
-<h1>Create</h1>
+<div class="dashboard-wrapper">
+    <header class="dashboard-header">
+        <h1 class="dashboard-title">@ViewData["Title"]</h1>
+    </header>
 
-<h4>Customer</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="FullName" class="control-label"></label>
-                <input asp-for="FullName" class="form-control" />
-                <span asp-validation-for="FullName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PhoneNumber" class="control-label"></label>
-                <input asp-for="PhoneNumber" class="form-control" />
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmergencyContact" class="control-label"></label>
-                <input asp-for="EmergencyContact" class="form-control" />
-                <span asp-validation-for="EmergencyContact" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FamilyDoctor" class="control-label"></label>
-                <input asp-for="FamilyDoctor" class="form-control" />
-                <span asp-validation-for="FamilyDoctor" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+    <main class="dashboard-container">
+        <section class="dashboard-card manager-card">
+            <h2 class="card-title">Add New Renter</h2>
+            <form asp-action="Create" method="post">
+                <div class="form-group">
+                    <label asp-for="FullName" class="form-label">Full Name</label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Address" class="form-label">Address</label>
+                    <input asp-for="Address" class="form-control" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                    <input asp-for="PhoneNumber" class="form-control" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EmergencyContact" class="form-label">Emergency Contact</label>
+                    <input asp-for="EmergencyContact" class="form-control" />
+                    <span asp-validation-for="EmergencyContact" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label for="Password" class="form-label">Password</label>
+                    <input type="password" name="Password" class="form-control" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Password must be at least 8 characters long, contain at least one number, one lowercase letter, and one uppercase letter." />
+                    <span class="text-danger" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </section>
+    </main>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<style>
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+
+    .text-danger {
+        color: #dc3545;
+        font-size: 0.9rem;
+    }
+
+    .form-actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+    }
+</style>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
 }

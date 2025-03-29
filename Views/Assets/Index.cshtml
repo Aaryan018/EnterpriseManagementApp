@@ -6,72 +6,180 @@
 
 <h1>Index</h1>
 
+<!-- Create New Button -->
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-create" asp-action="Create">
+        <i class="fas fa-plus-circle"></i> Create New Asset
+    </a>
 </p>
+
+<!-- Asset Table -->
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RentRate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Type)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdatedAt)
-            </th>
-            <th></th>
+            <th>@Html.DisplayNameFor(model => model.Name)</th>
+            <th>@Html.DisplayNameFor(model => model.RentRate)</th>
+            <th>@Html.DisplayNameFor(model => model.Description)</th>
+            <th>@Html.DisplayNameFor(model => model.Type)</th>
+            <th>@Html.DisplayNameFor(model => model.Status)</th>
+            <th>@Html.DisplayNameFor(model => model.Address)</th>
+            <th>@Html.DisplayNameFor(model => model.CreatedAt)</th>
+            <th>@Html.DisplayNameFor(model => model.UpdatedAt)</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RentRate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedAt)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.AssetId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.AssetId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.AssetId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.RentRate)</td>
+                <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                <td>@Html.DisplayFor(modelItem => item.Type)</td>
+                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                <td>@Html.DisplayFor(modelItem => item.Address)</td>
+                <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
+                <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
+                <td>
+                    <!-- Action Buttons -->
+                    <a class="btn btn-edit" asp-action="Edit" asp-route-id="@item.AssetId">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a class="btn btn-details" asp-action="Details" asp-route-id="@item.AssetId">
+                        <i class="fas fa-info-circle"></i> Details
+                    </a>
+                    <a class="btn btn-delete" asp-action="Delete" asp-route-id="@item.AssetId" onclick="return confirm('Are you sure you want to delete this asset?');">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<!-- Embedded CSS for Styling -->
+<style>
+    /* General Body Styles */
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        margin: 0;
+        padding: 30px;
+        box-sizing: border-box;
+    }
+
+    /* Page Title */
+    h1 {
+        color: #333;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-align: left;
+    }
+
+    /* Button Styles */
+    .btn {
+        display: inline-block; /* Keep default behavior for Create button */
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        margin-right: 10px; /* Add space between buttons */
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    /* Specific Button Classes */
+    .btn-create {
+        background-color: #28a745;
+        color: white;
+    }
+
+        .btn-create:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+
+    /* Action Buttons: Make them block-level and equal width */
+    .btn-edit,
+    .btn-details,
+    .btn-delete {
+        display: block; /* Make buttons block-level */
+        width: 100%; /* Make buttons take full width of their container */
+        margin-bottom: 10px; /* Add space between buttons */
+    }
+
+    .btn-edit {
+        background-color: #ffc107;
+        color: white;
+    }
+
+        .btn-edit:hover {
+            background-color: #e0a800;
+            transform: scale(1.05);
+        }
+
+    .btn-details {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+        .btn-details:hover {
+            background-color: #138496;
+            transform: scale(1.05);
+        }
+
+    .btn-delete {
+        background-color: #dc3545;
+        color: white;
+    }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+            transform: scale(1.05);
+        }
+
+    /* Table Styles */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+    }
+
+        .table th,
+        .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table th {
+            background-color: #dd13e8;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .table td {
+            background-color: #fafafa;
+            color: #333;
+        }
+
+        .table tr:nth-child(even) td {
+            background-color: #f9f9f9;
+        }
+
+        .table tr:hover td {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+</style>

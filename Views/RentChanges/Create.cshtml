@@ -1,42 +1,131 @@
-﻿@model EnterpriseManagementApp.Models.RentChange
+﻿@using System.Security.Claims
+@model EnterpriseManagementApp.Models.RentChange
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Request Rent Change";
 }
 
-<h1>Create</h1>
+<div class="dashboard-wrapper">
+    <header class="dashboard-header">
+        <h1 class="dashboard-title">@ViewData["Title"]</h1>
+        <p class="dashboard-subtitle">Submit a request to change your rent amount</p>
+    </header>
 
-<h4>RentChange</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="AssetId" class="control-label"></label>
-                <select asp-for="AssetId" class ="form-control" asp-items="ViewBag.AssetId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ChangeDate" class="control-label"></label>
-                <input asp-for="ChangeDate" class="form-control" />
-                <span asp-validation-for="ChangeDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OldRate" class="control-label"></label>
-                <input asp-for="OldRate" class="form-control" />
-                <span asp-validation-for="OldRate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+    <main class="dashboard-container">
+        <section class="dashboard-card customer-card">
+
+            @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
+            {
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach (var modelState in ViewData.ModelState.Values)
+                        {
+                            foreach (var error in modelState.Errors)
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        }
+                    </ul>
+                </div>
+            }
+
+            <form asp-action="Create" method="post" id="rentChangeForm">
+                <!-- Hidden field for UserId -->
+                
+                <input type="hidden" name="UserId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
+
+                <div class="form-group">
+                    <label asp-for="AssetId" class="control-label">Select Asset</label>
+                    <select asp-for="AssetId" class="form-control" asp-items="ViewBag.AssetId">
+                        <option value="">-- Select an Asset --</option>
+                    </select>
+                    <span asp-validation-for="AssetId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ChangeDate" class="control-label">Effective Change Date</label>
+                    <input asp-for="ChangeDate" type="date" class="form-control" required />
+                    <span asp-validation-for="ChangeDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="OldRate" class="control-label">Current Rent Rate ($)</label>
+                    <input asp-for="OldRate" class="form-control" required />
+                    <span asp-validation-for="OldRate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="NewRate" class="control-label">Requested Rent Rate ($)</label>
+                    <input asp-for="NewRate" class="form-control" required />
+                    <span asp-validation-for="NewRate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Reason" class="control-label">Reason for Change</label>
+                    <textarea asp-for="Reason" class="form-control" rows="4" required></textarea>
+                    <span asp-validation-for="Reason" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Submit Request</button>
+                    <a href="@Url.Action("Index", "Customers")" class="btn btn-secondary">Cancel</a>
+                </div>
+                <div class="text-success">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <p>@TempData["SuccessMessage"]</p>
+                    }
+                </div>
+            </form>
+        </section>
+    </main>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<style>
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .control-label {
+        font-weight: 500;
+        color: #333;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+
+    .text-danger {
+        color: #f44336;
+        font-size: 0.9rem;
+    }
+
+    .text-success {
+        color: #66bb6a;
+        font-size: 1rem;
+        margin-top: 10px;
+    }
+
+    .alert-danger {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 6px;
+    }
+</style>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+            $("#rentChangeForm").on("submit", function (e) {
+                console.log("Form submission triggered");
+                if (!$(this).valid()) {
+                    console.log("Client-side validation failed");
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
 }

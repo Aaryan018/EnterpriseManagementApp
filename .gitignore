@@ -26,3 +26,11 @@ ehthumbs.db
 ScaffoldingReadMe.txt
 
 .vs/
+
+
+.idea/
+
+appsettings.cs
+
+node_modules/
+

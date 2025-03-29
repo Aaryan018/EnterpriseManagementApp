@@ -10,9 +10,11 @@ using NuGet.ContentModel;
 using EnterpriseManagementApp;
 using EnterpriseManagementApp.DTO;
 using EnterpriseManagementApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EnterpriseManagementApp.Controllers
 {
+    [Authorize(Roles = "Manager")]
     public class OccupancyHistoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -25,8 +27,55 @@ namespace EnterpriseManagementApp.Controllers
         // GET: OccupancyHistories
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.OccupancyHistories.Include(o => o.Asset).Include(o => o.Customer);
-            return View(await applicationDbContext.ToListAsync());
+            // Retrieve the records, ordered by status
+            var occupancyHistories = await _context.OccupancyHistories
+                .Include(o => o.Asset)
+                .Include(o => o.Customer)
+                .OrderBy(oh => oh.Status == "Pending" ? 0 :
+                              oh.Status == "Approved" ? 1 : 2)  // Custom order
+                .ThenBy(oh => oh.Status)  // Optional: if you want to break ties (e.g., alphabetically by Asset/Customer)
+                .ToListAsync();  // Load the data into memory
+
+            // Loop through the records and check/update properties as needed
+            foreach (var occupancyHistory in occupancyHistories)
+            {
+                // Access the related Asset data
+                var asset = occupancyHistory.Asset;
+
+                // Update each occupancyHistory's Ammount due and Next payment values ...
+                // Ammount due is Asset.RentRate * 'how many months there are between start and end date of occupancyHistry record
+                if (asset != null)
+                {
+                    // ... 
+                    // DateOnly today = DateOnly.FromDateTime(DateTime.Today); 
+
+                    DateOnly startDate = occupancyHistory.Start;
+                    DateOnly endDate = occupancyHistory.End;
+
+                    // Calculate the months difference between Start and End dates
+                    int monthsDifference = endDate.Month - startDate.Month + 12 * (endDate.Year - startDate.Year);
+
+                    // Adjust months difference if the End day is before the Start day in the month
+                    if (endDate.Day < startDate.Day)
+                    {
+                        monthsDifference--; // Subtract one month if the End date is before the Start date in the month
+                    }
+
+                    occupancyHistory.TotalDue = monthsDifference * asset.RentRate;
+
+                    occupancyHistory.RemainingBalance = occupancyHistory.TotalDue - occupancyHistory.Paid;
+
+                    // Mark the entity as modified
+                    _context.OccupancyHistories.Update(occupancyHistory);
+                }
+            }
+
+            // Save changes to the database
+            await _context.SaveChangesAsync();
+
+            // Pass the modified records to the view
+            return View(occupancyHistories);
+
         }
 
         // GET: OccupancyHistories/Details/5
@@ -62,7 +111,7 @@ namespace EnterpriseManagementApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CustomerId,AssetId,Start,End,Paid,AmmountDue")] OccupancyHistory occupancyHistory)
+        public async Task<IActionResult> Create([Bind("CustomerId,AssetId,Start,End,Paid,TotalDue")] OccupancyHistory occupancyHistory)
         {
             // Check if the model is valid
             if (ModelState.IsValid)
@@ -90,6 +139,7 @@ namespace EnterpriseManagementApp.Controllers
 
                     occupancyHistory.OccupancyHistoryId = Guid.NewGuid();
                     occupancyHistory.Status = "Pending";
+                    occupancyHistory.TotalDue = occupancyHistory.Asset.RentRate;
 
                     Debug.WriteLine("OH - CP2 - Check properties");
                     Debug.WriteLine("OCID: " + occupancyHistory.OccupancyHistoryId);
@@ -100,21 +150,37 @@ namespace EnterpriseManagementApp.Controllers
                     Debug.WriteLine("start: " + occupancyHistory.Start);
                     Debug.WriteLine("end: " + occupancyHistory.End);
                     Debug.WriteLine("paid: " + occupancyHistory.Paid);
-                    Debug.WriteLine("ammount due: " + occupancyHistory.AmmountDue);
+                    Debug.WriteLine("total due: " + occupancyHistory.TotalDue);
                     Debug.WriteLine("status: " + occupancyHistory.Status);
-
-                    //// Add to the context and save changes
-                    //_context.Add(occupancyHistory);
-                    //await _context.SaveChangesAsync();
 
                     try
                     {
+                        // ... 
+                        // DateOnly today = DateOnly.FromDateTime(DateTime.Today); 
+
+                        DateOnly startDate = occupancyHistory.Start;
+                        DateOnly endDate = occupancyHistory.End;
+
+                        // Calculate the months difference between Start and End dates
+                        int monthsDifference = endDate.Month - startDate.Month + 12 * (endDate.Year - startDate.Year);
+
+                        // Adjust months difference if the End day is before the Start day in the month
+                        if (endDate.Day < startDate.Day)
+                        {
+                            monthsDifference--; // Subtract one month if the End date is before the Start date in the month
+                        }
+
+                        occupancyHistory.TotalDue = monthsDifference * occupancyHistory.Asset.RentRate;
+
+                        occupancyHistory.RemainingBalance = occupancyHistory.TotalDue;
+
                         // Add to the context and save changes
                         _context.Add(occupancyHistory);
                         await _context.SaveChangesAsync();
 
                         // If everything is successful, you can return a success message as JSON.
-                        return Json(new { success = true, message = "Occupancy history created successfully." });
+                        //return Json(new { success = true, message = "Occupancy history created successfully." });
+                        return RedirectToAction(nameof(Index));
                     }
                     catch (DbUpdateException dbEx)
                     {
@@ -125,8 +191,44 @@ namespace EnterpriseManagementApp.Controllers
                         {
                             Debug.WriteLine($"Inner exception: {dbEx.InnerException.Message}");
                         }
+
+                        ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "FullName", occupancyHistory.CustomerId);
+
+                        // Exclude AssetIds that are already in the OccupancyHistory for the selected CustomerId
+                        var occupiedAssets = _context.OccupancyHistories
+                                                    .Where(oh => oh.CustomerId == occupancyHistory.CustomerId)
+                                                    .Select(oh => oh.AssetId)
+                                                    .ToList();
+                        var availableAssets = _context.Assets
+                                                      .Where(a => !occupiedAssets.Contains(a.AssetId))
+                                                      .Select(a => new { a.AssetId, a.Name })
+                                                      .ToList();
+
+                        // If some alternative assets available, leave message
+                        if (availableAssets.Count > 0)
+                        {
+                            // Set a message to inform the user
+                            ViewData["Message"] = "Previously selected Asset was already leased to Renter. Please select alternate option from newly provided options.";
+                        }
+
+                        // If no available assets, add all assets to the ViewData and set a message
+                        if (availableAssets.Count == 0)
+                        {
+                            // Get all assets (in case there are no available ones)
+                            availableAssets = _context.Assets
+                                                      .Select(a => new { a.AssetId, a.Name })
+                                                      .ToList();
+
+                            // Set a message to inform the user
+                            ViewData["Message"] = "No available assets for the selected customer.";
+                        }
+
+                        ViewData["AssetId"] = new SelectList(availableAssets, "AssetId", "Name");
+
+                        return View(occupancyHistory);
+
                         // Return a JSON response with the error details
-                        return Json(new { success = false, message = "Database error occurred while saving the data. Please try again later.", error = dbEx.Message });
+                        // return Json(new { success = false, message = "Database error occurred while saving the data. Please try again later.", error = dbEx.Message });
                     }
                     catch (Exception ex)
                     {
@@ -136,28 +238,10 @@ namespace EnterpriseManagementApp.Controllers
                         // Return a JSON response with the error details
                         return Json(new { success = false, message = "An unexpected error occurred. Please try again later.", error = ex.Message });
                     }
-
-
-
-                    Debug.WriteLine("OH create - CP3. Context updated");
-
-                    var occupancyHistoryDTO = new OccupancyHistoryDTO
-                    {
-                        OccupancyHistoryId = occupancyHistory.OccupancyHistoryId,
-                        CustomerId = occupancyHistory.CustomerId,
-                        AssetId = occupancyHistory.AssetId,
-                        Start = occupancyHistory.Start,
-                        End = occupancyHistory.End,
-                        Paid = occupancyHistory.Paid,
-                        AmmountDue = occupancyHistory.AmmountDue,
-                        Status = occupancyHistory.Status
-                    };
-
-                    // Return a success response with the created occupancy history details
-                    return Json(new { success = true, message = "Occupancy history created successfully.", data = occupancyHistoryDTO });
                 }
                 catch (Exception ex)
                 {
+                    Debug.WriteLine("Geneal exception");
                     // Return error if there was an exception
                     return Json(new { success = false, message = "An error occurred while creating the occupancy history.", error = ex.Message });
                 }
@@ -169,35 +253,22 @@ namespace EnterpriseManagementApp.Controllers
                 .Select(x => new { field = x.Key, errors = x.Value.Errors.Select(e => e.ErrorMessage) })
                 .ToList();
 
-            return Json(new { success = false, message = "Validation failed.", errors });
+            Debug.WriteLine("CP4 - errors:" + errors);
+            Debug.WriteLine("CP4 - Check properties");
+            Debug.WriteLine("OCID: " + occupancyHistory.OccupancyHistoryId);
+            Debug.WriteLine("CusId: " + occupancyHistory.CustomerId);
+            Debug.WriteLine("AssetId: " + occupancyHistory.AssetId);
+            Debug.WriteLine("Cus: " + occupancyHistory.Customer);
+            Debug.WriteLine("Asset: " + occupancyHistory.Asset);
+            Debug.WriteLine("start: " + occupancyHistory.Start);
+            Debug.WriteLine("end: " + occupancyHistory.End);
+            Debug.WriteLine("paid: " + occupancyHistory.Paid);
+            Debug.WriteLine("total due: " + occupancyHistory.TotalDue);
+            Debug.WriteLine("status: " + occupancyHistory.Status);
+
+            //return Json(new { success = false, message = "Validation failed.", errors });
+            return View(occupancyHistory);
         }
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("CustomerId,AssetId,Start,End,Paid,AmmountDue")] OccupancyHistory occupancyHistory)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        // Get the related Customer and Asset entities from the database
-        //        occupancyHistory.Customer = await _context.Customers
-        //            .FirstOrDefaultAsync(c => c.CustomerId == occupancyHistory.CustomerId);
-
-        //        occupancyHistory.Asset = await _context.Assets
-        //            .FirstOrDefaultAsync(a => a.AssetId == occupancyHistory.AssetId);
-
-
-        //        occupancyHistory.OccupancyHistoryId = Guid.NewGuid();
-        //        occupancyHistory.Status = "pending";
-        //        _context.Add(occupancyHistory);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-
-        //    // If the model is not valid, repopulate the dropdowns and return the view
-        //    ViewData["AssetId"] = new SelectList(_context.Assets, "AssetId", "Address", occupancyHistory.AssetId);
-        //    ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "Address", occupancyHistory.CustomerId);
-        //    return View(occupancyHistory);
-        //}
 
         // GET: OccupancyHistories/Edit/5
         public async Task<IActionResult> Edit(string CustomerId, Guid? AssetId)
@@ -267,7 +338,7 @@ namespace EnterpriseManagementApp.Controllers
             Debug.WriteLine("start: " + occupancyHistory.Start);
             Debug.WriteLine("end: " + occupancyHistory.End);
             Debug.WriteLine("paid: " + occupancyHistory.Paid);
-            Debug.WriteLine("ammount due: " + occupancyHistory.AmmountDue);
+            Debug.WriteLine("total due: " + occupancyHistory.TotalDue);
             Debug.WriteLine("status: " + occupancyHistory.Status);
             return View(occupancyHistory);
         }
@@ -317,6 +388,24 @@ namespace EnterpriseManagementApp.Controllers
         private bool OccupancyHistoryExists(Guid id)
         {
             return _context.OccupancyHistories.Any(e => Guid.Parse(e.CustomerId) == id);
+        }
+
+        // GET: OccupancyHistories/GetAvailableAssets
+        public JsonResult GetAvailableAssets(string customerId)
+        {
+            // Get the occupied AssetIds for the given CustomerId
+            var occupiedAssets = _context.OccupancyHistories
+                                        .Where(oh => oh.CustomerId == customerId)
+                                        .Select(oh => oh.AssetId)
+                                        .ToList();
+
+            // Get the available assets by excluding the occupied ones
+            var availableAssets = _context.Assets
+                                          .Where(a => !occupiedAssets.Contains(a.AssetId))
+                                          .Select(a => new { a.AssetId, a.Name })
+                                          .ToList();
+
+            return Json(availableAssets);
         }
     }
 }

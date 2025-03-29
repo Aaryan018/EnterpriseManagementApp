@@ -1,36 +1,178 @@
 ﻿@model EnterpriseManagementApp.Models.RentChange
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Rent Change Request Details";
 }
 
-<h1>Details</h1>
+<div class="dashboard-wrapper">
+    <header class="dashboard-header">
+        <h1 class="dashboard-title">@ViewData["Title"]</h1>
+        <p class="dashboard-subtitle">Details of your rent change request</p>
+    </header>
 
-<div>
-    <h4>RentChange</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Asset)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Asset.Address)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ChangeDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ChangeDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OldRate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OldRate)
-        </dd>
-    </dl>
+    <main class="dashboard-container">
+        <section class="dashboard-card customer-card">
+            <h2 class="card-title">Request Details</h2>
+            <dl class="row">
+                <dt class="col-sm-3">Asset Address</dt>
+                <dd class="col-sm-9">@Model.Asset?.Address</dd>
+
+                <dt class="col-sm-3">Change Date</dt>
+                <dd class="col-sm-9">@Model.ChangeDate.ToString("yyyy-MM-dd")</dd>
+
+                <dt class="col-sm-3">Old Rate ($)</dt>
+                <dd class="col-sm-9">@Model.OldRate</dd>
+
+                <dt class="col-sm-3">New Rate ($)</dt>
+                <dd class="col-sm-9">@Model.NewRate</dd>
+
+                <dt class="col-sm-3">Reason</dt>
+                <dd class="col-sm-9">@Model.Reason</dd>
+
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">@Model.Status @(Model.ProcessedDate.HasValue ? $"on {Model.ProcessedDate.Value.ToString("g")}" : "")</dd>
+
+                <dt class="col-sm-3">Submitted Date</dt>
+                <dd class="col-sm-9">@Model.SubmittedDate.ToString("g")</dd>
+            </dl>
+
+            <div class="card-actions">
+                <a class="btn btn-secondary" asp-action="Index"><i class="fas fa-arrow-left"></i> Back to List</a>
+            </div>
+        </section>
+    </main>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.RentChangeId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<style>
+    /* Reuse styles from Index.cshtml */
+    .dashboard-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .dashboard-header {
+        text-align: center;
+        margin-bottom: 40px;
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    .dashboard-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1a237e;
+    }
+
+    .dashboard-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-top: 10px;
+    }
+
+    .dashboard-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .dashboard-card {
+        background: linear-gradient(135deg, #ffffff, #f5f7fa);
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 900px;
+        width: 100%;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+    .customer-card {
+        border-left: 5px solid #66bb6a;
+    }
+
+    .card-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+    }
+
+    .col-sm-3 {
+        width: 25%;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .col-sm-9 {
+        width: 75%;
+    }
+
+    .card-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: 500;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+    .btn-secondary {
+        background-color: #607d8b;
+        color: white;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+        opacity: 0.95;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-title {
+            font-size: 2rem;
+        }
+
+        .dashboard-card {
+            padding: 20px;
+        }
+
+        .col-sm-3, .col-sm-9 {
+            width: 100%;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}

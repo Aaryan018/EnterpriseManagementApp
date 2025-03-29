@@ -1,47 +1,293 @@
 ﻿@model IEnumerable<EnterpriseManagementApp.Models.RentChange>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "My Rent Change Requests";
 }
 
-<h1>Index</h1>
+<div class="dashboard-wrapper">
+    <header class="dashboard-header">
+        <h1 class="dashboard-title">@ViewData["Title"]</h1>
+        <p class="dashboard-subtitle">View the status of your rent change requests</p>
+    </header>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Asset)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ChangeDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OldRate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Asset.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ChangeDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OldRate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.RentChangeId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.RentChangeId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.RentChangeId">Delete</a>
-            </td>
-        </tr>
+    <main class="dashboard-container">
+        <section class="dashboard-card customer-card">
+            <h2 class="card-title">Rent Change Requests</h2>
+            <p class="card-description">Below are the rent change requests you have submitted.</p>
+
+            <div class="card-actions">
+                <a class="btn btn-primary" href="@Url.Action("Create", "RentChanges")"><i class="fas fa-plus"></i> Submit New Request</a>
+                <a class="btn btn-secondary" href="@Url.Action("Index", "Customers")"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            </div>
+
+            @if (Model.Any())
+            {
+                <table class="customer-table">
+                    <thead>
+                        <tr>
+                            <th>Asset Address</th>
+                            <th>Change Date</th>
+                            <th>Old Rate ($)</th>
+                            <th>New Rate ($)</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Submitted Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Asset.Address</td>
+                                <td>@item.ChangeDate.ToString("yyyy-MM-dd")</td>
+                                <td>@item.OldRate</td>
+                                <td>@item.NewRate</td>
+                                <td>@item.Reason</td>
+                                <td class="status-@item.Status.ToLower()">@item.Status</td>
+                                <td>@item.SubmittedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    <a href="@Url.Action("Details", "RentChanges", new { id = item.RentChangeId })" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="no-data">No rent change requests found.</p>
+            }
+        </section>
+    </main>
+</div>
+
+<style>
+    /* Base styles (reused from your dashboard CSS) */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .dashboard-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .dashboard-header {
+        text-align: center;
+        margin-bottom: 40px;
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    .dashboard-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1a237e;
+    }
+
+    .dashboard-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+    }
+
+    .dashboard-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .dashboard-card {
+        background: linear-gradient(135deg, #ffffff, #f5f7fa);
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        width: 100%;
+        max-width: 1000px;
+    }
+
+    .customer-card {
+        border-left: 5px solid #4caf50;
+    }
+
+    .card-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .card-description {
+        font-size: 1.1rem;
+        color: #777;
+        margin-bottom: 20px;
+    }
+
+    .card-actions {
+        margin-bottom: 30px;
+        display: flex;
+        gap: 15px;
+    }
+
+    /* Button styles */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: #1976d2;
+        color: #fff;
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background: #1565c0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(25, 118, 210, 0.3);
+        }
+
+    .btn-secondary {
+        background: #757575;
+        color: #fff;
+        border: none;
+    }
+
+        .btn-secondary:hover {
+            background: #616161;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(97, 97, 97, 0.3);
+        }
+
+    .btn-info {
+        background: #26c6da;
+        color: #fff;
+        border: none;
+    }
+
+        .btn-info:hover {
+            background: #00bcd4;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(38, 198, 218, 0.3);
+        }
+
+    .btn i {
+        margin-right: 8px;
+    }
+
+    /* Table styles */
+    .customer-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+        .customer-table th, .customer-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .customer-table th {
+            background: #1976d2;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .customer-table td {
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .customer-table tr {
+            transition: background 0.3s ease;
+        }
+
+            .customer-table tr:hover {
+                background: #f5f7fa;
+            }
+
+    /* Status badge styles */
+    .status-pending {
+        color: #f57c00;
+        font-weight: 600;
+    }
+
+    .status-approved {
+        color: #4caf50;
+        font-weight: 600;
+    }
+
+    .status-rejected {
+        color: #d32f2f;
+        font-weight: 600;
+    }
+
+    /* No data message */
+    .no-data {
+        text-align: center;
+        color: #777;
+        font-size: 1rem;
+        margin-top: 20px;
+    }
+
+    /* Animation */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .dashboard-title {
+            font-size: 2rem;
+        }
+
+        .dashboard-card {
+            padding: 20px;
+        }
+
+        .card-actions {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .customer-table {
+            display: block;
+            overflow-x: auto;
+        }
+
+            .customer-table th, .customer-table td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script>
 }
-    </tbody>
-</table>

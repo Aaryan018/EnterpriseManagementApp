@@ -62,11 +62,16 @@
                 <td>
                     @(item.ApprovalStatus ? "Approved" : "Pending/Denied")
                 </td>
-                <td>
-                    <a asp-action="Approve" asp-route-id="@item.Id">Approve</a> |
-                    <a asp-action="Deny" asp-route-id="@item.Id">Deny</a>
-                </td>
+                @if (User.IsInRole("Manager"))
+                {
+                    <td>
+                        <a asp-action="Approve" asp-route-id="@item.Id">Approve</a> |
+                        <a asp-action="Deny" asp-route-id="@item.Id">Deny</a>
+                    </td>
+                }
             </tr>
         }
     </tbody>
 </table>
+
+<a href="@Url.Action("Create", "Requests")">Apply for leave</a>

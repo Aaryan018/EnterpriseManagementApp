@@ -1,0 +1,73 @@
+@model IEnumerable<AppEvent>
+
+@{
+    ViewData["Title"] = "Index";
+    string userRole = ViewData["UserRole"] as string;
+}
+
+@if (userRole == "Customer")
+{
+    <h1>My Events</h1>
+}
+else
+{
+    <h1>Events</h1>
+}
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Service)
+        </th>
+        <th>
+            Date
+        </th>
+        <th>
+            Start Time
+        </th>
+        <th>
+            End Time
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Service.Name)
+        </td>
+        <td>
+            @item.StartTime.ToString("MMM-dd-yyyy") <!-- Date only -->
+        </td>
+        <td>
+            @item.StartTime.ToString("HH:mm") <!-- Time only -->
+        </td>
+        <td>
+            @item.EndTime.ToString("HH:mm") <!-- Time only -->
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+
+        <td>
+            @if (userRole != "Manager" || userRole != "Customer")
+            {
+                <text>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |   
+                </text>
+            }
+            <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+        </td>
+    </tr>
+    }
+    </tbody>
+</table>

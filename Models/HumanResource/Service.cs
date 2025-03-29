@@ -15,10 +15,10 @@ public class Service
     public string Qualifications { get; set; }
 
     // Navigation property: one service can have many events
-    public virtual ICollection<Event> Events { get; set; }
+    public virtual ICollection<AppEvent> Events { get; set; }
 
     public Service()
     {
-        Events = new HashSet<Event>();
+        Events = new HashSet<AppEvent>();
     }
 }

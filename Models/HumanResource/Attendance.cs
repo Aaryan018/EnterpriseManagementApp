@@ -10,11 +10,11 @@ public class Attendance
     // Foreign key to Event
     public int EventId { get; set; }
 
-    public DateTime ClockedInTime { get; set; }
-    public DateTime ClockedOutTime { get; set; }
-    public DayType DayType { get; set; }
+    public DateTime? ClockedInTime { get; set; }
+    public DateTime? ClockedOutTime { get; set; }
+    public DayType? DayType { get; set; }
 
     // Navigation properties
-    public Employee Employee { get; set; }
-    public Event Event { get; set; }
+    public Employee? Employee { get; set; }
+    public AppEvent? Event { get; set; }
 }
